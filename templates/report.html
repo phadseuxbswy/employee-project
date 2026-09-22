@@ -1,0 +1,48 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .text-pastel-purple { color: #8e629f !important; }
+    .bg-pastel-purple { background-color: #E2D1F9 !important; color: #5a3d6b;}
+    .bg-pastel-yellow { background-color: #FEF3B3 !important; color: #6b5700;}
+    .bg-pastel-blue { background-color: #D4F0F0 !important; color: #356b6b;}
+    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: none; transition: 0.3s; }
+    .card-custom:hover { transform: translateY(-5px); }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">📊</span> รายงานภาพรวม</h2>
+    </div>
+
+    <!-- การ์ดสรุปตัวเลข 3 ใบ -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card card-custom bg-pastel-purple h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3"><span style="font-size: 2.5rem;">💸</span></div>
+                    <h6 class="fw-bold opacity-75">ยอดจ่ายเงินเดือนรวม</h6>
+                    <h3 class="fw-bold mb-0">{{ total_salary|floatformat:2 }} ฿</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom bg-pastel-yellow h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3"><span style="font-size: 2.5rem;">🏥</span></div>
+                    <h6 class="fw-bold opacity-75">ยอดส่งประกันสังคมรวม</h6>
+                    <h3 class="fw-bold mb-0">{{ total_sso|floatformat:2 }} ฿</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom bg-pastel-blue h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3"><span style="font-size: 2.5rem;">🏢</span></div>
+                    <h6 class="fw-bold opacity-75">ยอดภาษีหัก ณ ที่จ่าย</h6>
+                    <h3 class="fw-bold mb-0">{{ total_tax|floatformat:2 }} ฿</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

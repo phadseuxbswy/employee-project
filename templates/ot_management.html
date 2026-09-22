@@ -1,0 +1,80 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .text-pastel-purple { color: #8e629f !important; }
+    .text-pastel-yellow { color: #a88b00 !important; }
+    .bg-pastel-purple { background-color: #E2D1F9 !important; }
+    .bg-pastel-yellow { background-color: #FEF3B3 !important; }
+    .border-pastel-purple { border-color: #d1b3ff !important; }
+    .border-pastel-yellow { border-color: #FCE679 !important; }
+    .btn-pastel-purple { background-color: #d1b3ff; color: #5a3d6b; border: none; transition: 0.3s; }
+    .btn-pastel-purple:hover { background-color: #c099ff; color: #fff; }
+    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: none; }
+    .table-custom-header { background-color: #E2D1F9 !important; color: #5a3d6b !important; }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">⚙️</span> ระบบจัดการ OT</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card card-custom border-top border-4 border-pastel-purple h-100">
+                <div class="card-body p-4 bg-light bg-opacity-50">
+                    <h5 class="fw-bold text-pastel-purple mb-4">📥 ฟอร์มบันทึก OT</h5>
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold">เลือกชื่อพนักงาน *</label>
+                            <select name="employee_id" class="form-select rounded-pill shadow-sm" required>
+                                <option value="">-- เลือก --</option>
+                                {% for emp in employees %}
+                                    <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold">จำนวนชั่วโมง *</label>
+                            <input type="number" name="ot_hours" class="form-control rounded-pill shadow-sm" step="0.5" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary fw-bold">วันที่ *</label>
+                            <input type="date" name="ot_date" class="form-control rounded-pill shadow-sm" required>
+                        </div>
+                        <button type="submit" class="btn btn-pastel-purple w-100 fw-bold py-2 rounded-pill shadow-sm">💾 บันทึก</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card card-custom border-top border-4 border-pastel-yellow h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-pastel-yellow mb-4">👥 ข้อมูลอ้างอิง</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle text-center">
+                            <thead class="table-custom-header">
+                                <tr>
+                                    <th class="py-3" style="border-top-left-radius: 10px;">ชื่อ-นามสกุล</th>
+                                    <th class="py-3">แผนก</th>
+                                    <th class="py-3" style="border-top-right-radius: 10px;">เงินเดือนฐาน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emp in employees %}
+                                <tr>
+                                    <td class="text-start ps-3">{{ emp.first_name }} {{ emp.last_name }}</td>
+                                    <td><span class="badge bg-pastel-yellow text-dark rounded-pill px-3">{{ emp.get_department_display }}</span></td>
+                                    <td>{{ emp.salary|floatformat:2 }} ฿</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

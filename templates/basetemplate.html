@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการพนักงาน</title>
+    <!-- โหลด Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* 🌸 สีพื้นหลังแบบ Facebook (แต่เป็นโทนพาสเทลของคุณ) */
+        body {
+            background-color: #fcfaff; 
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* -------------------------------------
+            🔴 ตกแต่ง Sidebar (เมนูด้านซ้าย)
+        -------------------------------------- */
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            background-color: transparent; /* โปร่งใสกลืนไปกับพื้นหลังแบบ FB */
+            position: fixed; /* ยึดติดขอบซ้าย */
+            top: 0;
+            left: 0;
+            padding-top: 15px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0,0,0,0.05); /* เส้นขอบบางๆ */
+        }
+
+        /* ชื่อระบบด้านบน */
+        .sidebar-brand {
+            color: #5a3d6b !important;
+            font-weight: 800;
+            font-size: 1.4rem;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+        }
+
+        /* โปรไฟล์ผู้ใช้ */
+        .user-profile {
+            padding: 8px 10px;
+            margin: 0 15px 15px 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #050505;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .user-profile:hover {
+            background-color: #E2D1F9; /* สีม่วงพาสเทลตอน Hover */
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #d4beed;
+            color: #5a3d6b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* เมนูต่างๆ */
+        .sidebar .nav-link {
+            color: #050505 !important;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 4px 15px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        /* กรอบไอคอนกลมๆ สไตล์ Facebook */
+        .sidebar .nav-link .menu-icon {
+            width: 36px;
+            height: 36px;
+            background-color: #e4e6eb; /* สีเทาแบบ FB */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        /* เอฟเฟกต์ตอนชี้เมนู */
+        .sidebar .nav-link:hover {
+            background-color: #E2D1F9 !important;
+            color: #5a3d6b !important;
+        }
+        
+        /* เปลี่ยนสีไอคอนตอนชี้ด้วย */
+        .sidebar .nav-link:hover .menu-icon {
+            background-color: #5a3d6b;
+            color: #fff;
+        }
+
+        /* ปุ่มออกจากระบบ */
+        .btn-logout {
+            background-color: transparent; 
+            color: #7a3a46;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 10px 15px;
+            width: calc(100% - 30px);
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+            text-align: left;
+        }
+
+        .btn-logout:hover {
+            background-color: #ffb6c1; /* ชมพูพาสเทล */
+        }
+
+        .btn-logout .menu-icon {
+            background-color: #ffe5e9;
+            color: #7a3a46;
+        }
+
+        /* -------------------------------------
+            🔴 พื้นที่เนื้อหาหลัก (ดันหลบ Sidebar)
+        -------------------------------------- */
+        .main-content {
+            margin-left: 300px; /* ดันเนื้อหาไปทางขวาให้พ้นระยะ Sidebar */
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 🔴 แถบเมนูด้านซ้าย (Sidebar สไตล์ Facebook) -->
+    <nav class="sidebar">
+        <!-- โลโก้ / ชื่อระบบ -->
+        <a href="{% url 'index' %}" class="sidebar-brand">
+            🏢 ระบบพนักงาน
+        </a>
+
+        <!-- โปรไฟล์ผู้ใช้ (ใส่ลิงก์ไปหน้า profile แล้ว) -->
+        <a href="{% url 'profile' %}" class="user-profile">
+            <!-- 🌟 เช็คว่ามีรูปให้แสดงรูป ถ้าไม่มีแสดงไอคอน 🌟 -->
+            {% if current_emp and current_emp.photo %}
+                <img src="{{ current_emp.photo.url }}" class="user-avatar" style="object-fit: cover; padding: 0;">
+            {% else %}
+                <div class="user-avatar">👤</div>
+            {% endif %}
+            <div>{{ user.username }}</div>
+        </a>
+
+        <!-- รายการเมนู -->
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'ess_dashboard' %}">
+                    <div class="menu-icon">📱</div> ระบบพนักงาน (ESS)
+                </a>
+            </li>
+
+            <!-- ซ่อนเมนูไว้ถ้าไม่ใช่ Admin -->
+            {% if user.is_staff %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <div class="menu-icon">📈</div> แดชบอร์ด
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">
+                    <div class="menu-icon">👥</div> รายชื่อพนักงาน
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'attendance' %}">
+                    <div class="menu-icon">⏱️</div> บันทึกเวลา
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'approval' %}">
+                    <div class="menu-icon">✅</div> อนุมัติคำขอ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'payroll' %}">
+                    <div class="menu-icon">💰</div> เงินเดือน
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'reports' %}">
+                    <div class="menu-icon">📊</div> รายงาน
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'ot_management' %}">
+                    <div class="menu-icon">⏰</div> จัดการ OT
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+
+        <hr style="margin: 15px 20px; border-color: #d4beed;">
+
+        <!-- ปุ่มออกจากระบบ -->
+        <form action="{% url 'logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">
+                <div class="menu-icon">🚪</div> ออกจากระบบ
+            </button>
+        </form>
+    </nav>
+
+    <!-- 🔴 พื้นที่สำหรับแสดงเนื้อหาของหน้าอื่นๆ (อยู่ฝั่งขวา) -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

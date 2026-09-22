@@ -1,0 +1,79 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .text-pastel-purple { color: #8e629f !important; }
+    .bg-pastel-purple { background-color: #E2D1F9 !important; }
+    .bg-pastel-yellow { background-color: #FEF3B3 !important; }
+    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: none; }
+    .card-custom:hover { transform: translateY(-5px); }
+    .table-custom-header { background-color: #E2D1F9 !important; color: #5a3d6b !important; }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-pastel-purple mb-1"><span style="font-size: 1.8rem;">📊</span> แดชบอร์ดสรุปข้อมูล</h2>
+            <p class="text-muted ms-1">ยินดีต้อนรับ, <strong class="text-pastel-purple">{{ user.username }}</strong></p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="card card-custom bg-pastel-purple h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 70px; height: 70px;">
+                            <span style="font-size: 2rem;">👥</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold" style="color: #5a3d6b;">จำนวนพนักงานทั้งหมด</h5>
+                        <h2 class="fw-bold mb-0" style="color: #5a3d6b;">{{ total_employees }} <span class="fs-5 fw-normal">คน</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-custom bg-pastel-yellow h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 70px; height: 70px;">
+                            <span style="font-size: 2rem;">💰</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold" style="color: #6b5700;">เงินเดือนเฉลี่ย</h5>
+                        <h2 class="fw-bold mb-0" style="color: #6b5700;">{{ avg_salary|floatformat:2 }} <span class="fs-5 fw-normal">บาท</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-custom border-top border-4 border-pastel-purple">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-4 text-pastel-purple">📈 สถิติพนักงานแยกตามแผนก</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="text-center table-custom-header">
+                        <tr>
+                            <th class="py-3" style="border-top-left-radius: 10px;">แผนก</th>
+                            <th class="py-3" style="border-top-right-radius: 10px;">จำนวนพนักงาน (คน)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for dept in dept_counts %}
+                        <tr>
+                            <td class="fw-semibold text-start ps-5">{{ dept.department }}</td>
+                            <td><span class="badge rounded-pill bg-pastel-yellow text-dark px-4 py-2 fs-6 shadow-sm">{{ dept.total }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-muted py-4">ยังไม่มีข้อมูล</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .text-pastel-purple { color: #8e629f !important; }
+    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: none; }
+    .table-custom-header { background-color: #E2D1F9 !important; color: #5a3d6b !important; }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">💰</span> ระบบจัดการเงินเดือน (Payroll)</h2>
+    </div>
+
+    <div class="card card-custom border-top border-4 border-pastel-purple">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <!-- ใส่ text-center ตรงตารางหลักให้คุมทุกช่อง -->
+                <table class="table table-hover align-middle text-center mb-0">
+                    <thead class="table-custom-header">
+                        <tr>
+                            <th class="py-3 text-center" style="border-top-left-radius: 10px;">ชื่อ-นามสกุล</th>
+                            <th class="py-3 text-center">เงินเดือนฐาน</th>
+                            <th class="py-3 text-center">ชั่วโมง OT</th>
+                            <th class="py-3 text-center">เงิน OT (+1.5)</th>
+                            <th class="py-3 text-center">หัก สปส.</th>
+                            <th class="py-3 text-center">หัก ภาษี</th>
+                            <th class="py-3 text-center" style="border-top-right-radius: 10px;">รับสุทธิ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in payrolls %}
+                        <tr>
+                            <!-- 🟢 ลบ text-start ออกแล้วครับ จะได้อยู่ตรงกลาง -->
+                            <td class="fw-semibold text-center">{{ item.employee.first_name }} {{ item.employee.last_name }}</td>
+                            <td class="text-center">{{ item.base|floatformat:2 }}</td>
+                            <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1 rounded-pill">{{ item.ot_hours|floatformat:1 }}</span></td>
+                            <td class="text-success fw-bold text-center">+{{ item.ot_pay|floatformat:2 }}</td>
+                            <td class="text-danger text-center">-{{ item.sso|floatformat:2 }}</td>
+                            <td class="text-danger text-center">-{{ item.tax|floatformat:2 }}</td>
+                            <td class="fw-bold text-pastel-purple fs-6 text-center">{{ item.net|floatformat:2 }} ฿</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

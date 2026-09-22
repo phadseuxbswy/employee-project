@@ -1,0 +1,180 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .login-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .login-header {
+        background-color: #E2D1F9 !important;
+        color: #5a3d6b !important;
+        border-bottom: none;
+        padding: 1.2rem;
+    }
+
+    .btn-login {
+        background-color: #ffb6c1 !important;
+        color: #7a3a46 !important;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background-color: #FEF3B3 !important;
+        color: #5c4e00 !important;
+        transform: translateY(-2px);
+    }
+
+    .login-link {
+        color: #6c547a;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .login-link:hover {
+        color: #5a3d6b;
+        text-decoration: underline;
+    }
+
+    .contact-card-btn {
+        background: #ffffff;
+        border: 1px solid #ebdcfc;
+        border-radius: 14px;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .contact-card-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(90, 61, 107, 0.12);
+        border-color: #d1b3ff;
+    }
+
+    .contact-icon-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #ff8c94;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .form-control-chat {
+        border-radius: 10px;
+        border: 1px solid #e0d4f5;
+        font-size: 0.9rem;
+    }
+    .form-control-chat:focus {
+        border-color: #d1b3ff;
+        box-shadow: 0 0 0 0.2rem rgba(226, 209, 249, 0.4);
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <!-- การ์ดเข้าสู่ระบบ -->
+            <div class="card shadow-sm login-card">
+                <div class="card-header login-header text-center">
+                    <h4 class="mb-0 fw-bold">เข้าสู่ระบบ</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success rounded-3 py-2 small border-0 mb-3 text-center" style="background-color: #d4edda; color: #155724;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {{ form.as_p }}
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-login fw-bold py-2 rounded-pill shadow-sm">เข้าสู่ระบบ</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted small mb-2">
+                            ลืมรหัสผ่าน? กรุณาติดต่อฝ่ายบุคคลหรือผู้ดูแลระบบ (IT Support)
+                        </p>
+                        <a href="{% url 'register' %}" class="login-link small">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ปุ่มการ์ดส่งข้อความติดต่อแอดมิน -->
+            <div class="mt-4 text-center">
+                <div class="contact-card-btn text-start" data-bs-toggle="modal" data-bs-target="#chatModal">
+                    <div class="contact-icon-circle me-3">
+                        💬
+                    </div>
+                    <div>
+                        <div class="fw-bold" style="color: #333333; font-size: 0.95rem;">ส่งข้อความถึงฝ่ายบุคคล / IT Support</div>
+                        <div class="text-muted small">พิมพ์แจ้งลืมรหัสผ่าน หรือสอบถามปัญหาโดยตรง</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal ช่องแชทส่งข้อความถึงแอดมิน -->
+<div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-0 pb-0" style="background-color: #E2D1F9;">
+                <h5 class="modal-title fw-bold" id="chatModalLabel" style="color: #5a3d6b;">💬 ส่งข้อความถึงแอดมิน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="{% url 'send_support' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">พิมพ์รายละเอียดปัญหาหรือแจ้งขอรีเซ็ตรหัสผ่านไว้ที่นี่ ข้อมูลจะถูกส่งตรงไปยังแดชบอร์ดของแอดมินทันที:</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">ชื่อ - นามสกุล หรือ Username ของคุณ:</label>
+                        <input type="text" name="sender_name" class="form-control form-control-chat" placeholder="เช่น Pattarapa (หรือระบุ username)" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">ช่องทางติดต่อกลับ (เบอร์โทร / LINE ID):</label>
+                        <input type="text" name="contact_info" class="form-control form-control-chat" placeholder="เช่น 081-xxx-xxxx หรือ line id" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">ข้อความที่ต้องการแจ้ง:</label>
+                        <textarea name="message" rows="3" class="form-control form-control-chat" placeholder="เช่น ลืมรหัสผ่านบัญชี appae รบกวนรีเซ็ตรหัสให้หน่อยค่ะ" required></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-sm fw-bold rounded-pill px-4 text-white shadow-sm" style="background-color: #5a3d6b;">
+                        ส่งข้อความ 
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

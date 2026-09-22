@@ -1,0 +1,116 @@
+{% extends 'basetemplate.html' %}
+
+{% block content %}
+<div class="container py-4 my-2">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                
+                <!-- ส่วนหัว & สถานะสิทธิ์ -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div>
+                        <h3 class="fw-bold mb-1" style="color: #5a3d6b;">👤 จัดการโปรไฟล์ส่วนตัว</h3>
+                        <p class="text-muted mb-0 small">อัปเดตข้อมูลส่วนตัวและบัญชีผู้ใช้งานของคุณ</p>
+                    </div>
+                    <div>
+                        {% if user.is_staff %}
+                            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #E2D1F9; color: #5a3d6b; font-size: 0.85rem;">
+                                🛡️ ผู้ดูแลระบบ (Admin)
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill px-3 py-2 bg-light text-secondary border shadow-sm" style="font-size: 0.85rem;">
+                                👤 พนักงานทั่วไป
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 🌟 1. ย้ายแท็ก form ขึ้นมาไว้ตรงนี้ และเพิ่ม enctype 🌟 -->
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <!-- การ์ดสรุปข้อมูลบัญชีพื้นฐาน & ปุ่มอัปโหลดรูป -->
+                    <div class="rounded-3 p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center" style="background-color: #fcfaff; border: 1px solid #ebdcfc;">
+                        <div class="d-flex align-items-center gap-3">
+                            
+                            <!-- 🌟 2. เปลี่ยนวงกลมเดิม เป็นรูปภาพและปุ่มกล้อง 🌟 -->
+                            <div class="position-relative">
+                                {% if employee and employee.photo %}
+                                    <img id="imgPreview" src="{{ employee.photo.url }}" class="rounded-circle shadow-sm bg-white" style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #d1b3ff;">
+                                {% else %}
+                                    <img id="imgPreview" src="https://ui-avatars.com/api/?name={{ user.username }}&background=d1b3ff&color=fff&size=50" class="rounded-circle shadow-sm" style="width: 50px; height: 50px; border: 2px solid #d1b3ff;">
+                                {% endif %}
+
+                            <!-- ปุ่มกล้อง -->
+                                <label for="photo" class="position-absolute bottom-0 end-0 bg-white rounded-circle shadow-sm d-flex justify-content-center align-items-center" style="width: 22px; height: 22px; cursor: pointer; border: 1px solid #ebdcfc; transform: translate(10%, 10%);">
+                                    <span style="font-size: 11px;">📷</span>
+                                </label>
+                                <input type="file" id="photo" name="photo" class="d-none" accept="image/*" onchange="previewImage(event)">
+                        </div>
+
+                            <div>
+                                <div class="fw-bold text-dark mb-0">{{ user.username }}</div>
+                                <small class="text-muted">เข้าร่วมเมื่อ: {{ user.date_joined|date:"d M Y" }}</small>
+                            </div>
+                        </div>
+                        <div class="mt-2 mt-sm-0">
+                            <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                🔑 เปลี่ยนรหัสผ่าน
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- แจ้งเตือนสถานะ -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert" style="background-color: #d4edda; color: #155724;">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">ชื่อ:</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">นามสกุล:</label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-secondary">ที่อยู่อีเมล:</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+
+                    <!-- แถบปุ่ม Action -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-3 border-top mt-4">
+                        <a href="{% url 'ess_dashboard' %}" class="btn btn-light rounded-pill px-4 text-muted fw-semibold border">
+                            ← ย้อนกลับ
+                        </a>
+                        <button type="submit" class="btn px-4 py-2 text-white fw-bold rounded-pill shadow-sm" style="background-color: #5a3d6b;">
+                            💾 บันทึกการเปลี่ยนแปลง
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🌟 3. สคริปต์แสดงรูปพรีวิวก่อนกดบันทึก 🌟 -->
+<script>
+function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+        var output = document.getElementById('imgPreview');
+        output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
+{% endblock %}

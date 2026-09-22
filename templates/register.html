@@ -1,0 +1,69 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    .text-pastel-purple { color: #5a3d6b !important; }
+    .bg-pastel-purple { background-color: #E2D1F9 !important; }
+    .card-custom { 
+        border-radius: 1.2rem; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+        border: none; 
+        overflow: hidden; 
+    }
+    .btn-pastel-purple { 
+        background-color: #d1b3ff; 
+        color: #5a3d6b; 
+        border: none; 
+        transition: 0.3s; 
+        font-weight: 600; 
+    }
+    .btn-pastel-purple:hover { 
+        background-color: #c099ff; 
+        color: #fff; 
+    }
+    /* ปรับแต่งช่องกรอกข้อมูลในฟอร์มให้มนและดูสะอาดตา */
+    .form-control {
+        border-radius: 0.8rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e0d4f5;
+    }
+    .form-control:focus {
+        border-color: #d1b3ff;
+        box-shadow: 0 0 0 0.25rem rgba(226, 209, 249, 0.4);
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-custom">
+                <!-- เปลี่ยนหัวการ์ดเป็นสีม่วงพาสเทล -->
+                <div class="card-header bg-pastel-purple text-center py-4 border-0">
+                    <h3 class="fw-bold text-pastel-purple mb-0">สมัครสมาชิก</h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- เรนเดอร์ฟอร์ม -->
+                        <div class="mb-3">
+                            {{ form.as_p }}
+                        </div>
+
+                        <!-- ปุ่มยืนยันการสมัครสีม่วงพาสเทลเข้าธีม -->
+                        <button type="submit" class="btn btn-pastel-purple w-100 py-2 rounded-pill mt-3 shadow-sm">
+                            ยืนยันการสมัคร
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'login' %}" class="text-decoration-none text-muted" style="font-size: 0.9rem; transition: 0.2s;" onmouseover="this.style.color='#5a3d6b'" onmouseout="this.style.color='#6c757d'">
+                            มีบัญชีแล้ว? เข้าสู่ระบบที่นี่
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
