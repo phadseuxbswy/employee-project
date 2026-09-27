@@ -314,7 +314,8 @@ def report_view(request):
 
 @login_required
 def ess_dashboard(request):
-    employees = Employee.objects.all()
+    # 🟢 แก้ไขบรรทัดนี้: กรองพนักงานที่สถานะเป็น 'resigned' ออกจาก Dropdown
+    employees = Employee.objects.exclude(status='resigned')
     recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:10]
     
     if request.method == 'POST':
@@ -328,7 +329,7 @@ def ess_dashboard(request):
         emp = get_object_or_404(Employee, id=emp_id)
         
         if action in ['check_in', 'check_out']:
-            # 🟢 แปลงเป็นเวลาท้องถิ่น (Local Time)
+            # แปลงเป็นเวลาท้องถิ่น (Local Time)
             now_local = timezone.localtime(timezone.now())
             today = now_local.date()
             now_time = now_local.time()
