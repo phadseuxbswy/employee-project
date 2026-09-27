@@ -30,6 +30,7 @@ urlpatterns = [
     path('ess/', views.ess_dashboard, name='ess_dashboard'),
     path('ot-management/', views.ot_management, name='ot_management'),
     path('send-support/', views.send_support_message, name='send_support'),
+    path('resigned/', views.resigned_list, name='resigned_list'),
 ]
 
 # สำหรับแสดงรูปภาพในโหมด Production

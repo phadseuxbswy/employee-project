@@ -1,45 +1,112 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
 <style>
-    .text-pastel-purple { color: #8e629f !important; }
-    .bg-pastel-purple { background-color: #E2D1F9 !important; color: #5a3d6b;}
-    .bg-pastel-yellow { background-color: #FEF3B3 !important; color: #6b5700;}
-    .bg-pastel-blue { background-color: #D4F0F0 !important; color: #356b6b;}
-    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: none; transition: 0.3s; }
-    .card-custom:hover { transform: translateY(-5px); }
+    /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
+    .text-corporate-blue { color: #1A365D !important; }
+    .text-corporate-secondary { color: #4A5568 !important; }
+
+    /* ปรับการ์ดให้ขอบโค้งน้อยลง มีเส้นขอบบางๆ และแบ่งสีแถบด้านบน */
+    .card-custom { 
+        border-radius: 0.5rem; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        border: 1px solid #E2E8F0; 
+        background-color: #ffffff; 
+        transition: 0.3s;
+    }
+    .card-custom:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+        border-color: #CBD5E0;
+    }
+
+    /* สไตล์สำหรับวงกลมไอคอนแทนการใช้อิโมจิ */
+    .icon-circle-blue {
+        width: 64px;
+        height: 64px;
+        background-color: #EBF4FF; 
+        color: #2B6CB0; 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+    
+    .icon-circle-green {
+        width: 64px;
+        height: 64px;
+        background-color: #F0FFF4; 
+        color: #276749; 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+
+    .icon-circle-gray {
+        width: 64px;
+        height: 64px;
+        background-color: #EDF2F7; 
+        color: #4A5568; 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
 </style>
 
 <div class="container mt-4 mb-5">
+    <!-- หัวข้อหน้า -->
     <div class="text-center mb-5">
-        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">📊</span> รายงานภาพรวม</h2>
+        <h3 class="fw-bold text-corporate-blue mb-1">รายงานภาพรวม</h3>
+        <p class="text-muted small">สรุปยอดค่าใช้จ่ายเงินเดือน ประกันสังคม และภาษี</p>
     </div>
 
     <!-- การ์ดสรุปตัวเลข 3 ใบ -->
     <div class="row g-4">
+        <!-- ยอดจ่ายเงินเดือน -->
         <div class="col-md-4">
-            <div class="card card-custom bg-pastel-purple h-100">
+            <div class="card card-custom h-100" style="border-top: 4px solid #1A365D;">
                 <div class="card-body p-4 text-center">
-                    <div class="mb-3"><span style="font-size: 2.5rem;">💸</span></div>
-                    <h6 class="fw-bold opacity-75">ยอดจ่ายเงินเดือนรวม</h6>
-                    <h3 class="fw-bold mb-0">{{ total_salary|floatformat:2 }} ฿</h3>
+                    <div class="mb-4">
+                        <div class="icon-circle-blue shadow-sm">฿</div>
+                    </div>
+                    <h6 class="fw-bold text-corporate-secondary mb-2">ยอดจ่ายเงินเดือนรวม</h6>
+                    <h3 class="fw-bold text-corporate-blue mb-0">{{ total_salary|floatformat:2 }} <span class="fs-6 fw-normal text-muted">฿</span></h3>
                 </div>
             </div>
         </div>
+        
+        <!-- ยอดประกันสังคม -->
         <div class="col-md-4">
-            <div class="card card-custom bg-pastel-yellow h-100">
+            <div class="card card-custom h-100" style="border-top: 4px solid #276749;">
                 <div class="card-body p-4 text-center">
-                    <div class="mb-3"><span style="font-size: 2.5rem;">🏥</span></div>
-                    <h6 class="fw-bold opacity-75">ยอดส่งประกันสังคมรวม</h6>
-                    <h3 class="fw-bold mb-0">{{ total_sso|floatformat:2 }} ฿</h3>
+                    <div class="mb-4">
+                        <div class="icon-circle-green shadow-sm">+</div>
+                    </div>
+                    <h6 class="fw-bold text-corporate-secondary mb-2">ยอดส่งประกันสังคมรวม</h6>
+                    <h3 class="fw-bold text-corporate-blue mb-0">{{ total_sso|floatformat:2 }} <span class="fs-6 fw-normal text-muted">฿</span></h3>
                 </div>
             </div>
         </div>
+        
+        <!-- ยอดภาษี -->
         <div class="col-md-4">
-            <div class="card card-custom bg-pastel-blue h-100">
+            <div class="card card-custom h-100" style="border-top: 4px solid #4A5568;">
                 <div class="card-body p-4 text-center">
-                    <div class="mb-3"><span style="font-size: 2.5rem;">🏢</span></div>
-                    <h6 class="fw-bold opacity-75">ยอดภาษีหัก ณ ที่จ่าย</h6>
-                    <h3 class="fw-bold mb-0">{{ total_tax|floatformat:2 }} ฿</h3>
+                    <div class="mb-4">
+                        <div class="icon-circle-gray shadow-sm">%</div>
+                    </div>
+                    <h6 class="fw-bold text-corporate-secondary mb-2">ยอดภาษีหัก ณ ที่จ่าย</h6>
+                    <h3 class="fw-bold text-corporate-blue mb-0">{{ total_tax|floatformat:2 }} <span class="fs-6 fw-normal text-muted">฿</span></h3>
                 </div>
             </div>
         </div>

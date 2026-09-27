@@ -22,7 +22,7 @@ def is_admin(user):
 @user_passes_test(is_admin, login_url='ess_dashboard')
 def index(request):
     query = request.GET.get('q', '')
-    employees = Employee.objects.all().order_by('-id')
+    employees = Employee.objects.exclude(status='resigned').order_by('-id')
     
     if query:
         dept_code = None
@@ -166,8 +166,6 @@ def custom_logout(request):
     logout(request)
     return redirect('login')
 
-
-# ================= ฟังก์ชันหลัก 4 ระบบ (Admin Only) =================
 
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
@@ -370,7 +368,6 @@ def ess_dashboard(request):
         'recent_requests': recent_requests
     })
     
-# ================= ระบบจัดการ OT =================
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
 def ot_management(request):
@@ -417,3 +414,53 @@ def send_support_message(request):
         )
         messages.success(request, 'ส่งข้อความหาแอดมินเรียบร้อยแล้ว แอดมินจะดำเนินการตรวจสอบให้ค่ะ')
     return redirect('login')
+
+@login_required
+@user_passes_test(is_admin, login_url='ess_dashboard')
+def resigned_list(request):
+    query = request.GET.get('q', '')
+    
+    # ดึงเฉพาะคนที่สถานะเป็น 'resigned'
+    employees = Employee.objects.filter(status='resigned').order_by('-id')
+    
+    if query:
+        dept_code = None
+        q_lower = query.strip().lower()
+        
+        # 🟢 แปลงคำค้นหาภาษาไทยเป็น Code ของแผนก
+        if 'ไอที' in q_lower or 'it' in q_lower:
+            dept_code = 'IT'
+        elif 'บุคคล' in q_lower or 'hr' in q_lower:
+            dept_code = 'HR'
+        elif 'บัญชี' in q_lower or 'acc' in q_lower:
+            dept_code = 'ACC'
+        elif 'การตลาด' in q_lower or 'mkt' in q_lower:
+            dept_code = 'MKT'
+        elif 'ขาย' in q_lower or 'sales' in q_lower:
+            dept_code = 'SALES'
+        elif 'จัดซื้อ' in q_lower or 'purchase' in q_lower:
+            dept_code = 'PURCHASE'
+        elif 'บริการ' in q_lower or 'customer' in q_lower or 'cs' in q_lower:
+            dept_code = 'CS'
+        elif 'บริหาร' in q_lower or 'mgmt' in q_lower:
+            dept_code = 'MGMT'
+
+        search_filter = (
+            Q(first_name__icontains=query) | 
+            Q(last_name__icontains=query) | 
+            Q(position__icontains=query)
+        )
+        
+        # 🟢 ถ้าระบุแผนกได้ ให้ค้นหาด้วย Code แผนก
+        if dept_code:
+            search_filter |= Q(department=dept_code)
+        else:
+            search_filter |= Q(department__icontains=query)
+
+        employees = employees.filter(search_filter)
+
+    paginator = Paginator(employees, 8)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'resigned_list.html', {'page_obj': page_obj, 'query': query})

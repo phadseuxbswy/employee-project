@@ -1,24 +1,36 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
 <style>
-    .text-pastel-purple { color: #8e629f !important; }
-    .btn-pastel-purple { background-color: #d1b3ff; color: #5a3d6b; border: none; transition: 0.3s; }
-    .btn-pastel-purple:hover { background-color: #c099ff; color: #fff; }
-    .btn-pastel-yellow { background-color: #FCE679; color: #5c4e00; border: none; transition: 0.3s; font-weight: 500;}
-    .btn-pastel-yellow:hover { background-color: #FCDA49; color: #423800; }
-    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: none; }
-    .table-custom-header { background-color: #E2D1F9 !important; color: #5a3d6b !important; }
+    /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
+    .text-corporate-blue { color: #1A365D !important; }
+    
+    .btn-primary-corporate { background-color: #2B6CB0; color: #fff; border: none; transition: 0.2s; font-weight: 500; }
+    .btn-primary-corporate:hover { background-color: #2C5282; color: #fff; }
+    
+    .btn-secondary-corporate { background-color: #EDF2F7; color: #2D3748; border: 1px solid #CBD5E0; transition: 0.2s; font-weight: 500; }
+    .btn-secondary-corporate:hover { background-color: #E2E8F0; color: #1A202C; }
+    
+    /* ปรับขอบการ์ดให้มีความโค้งเล็กน้อย และมีเส้นขอบบางๆ */
+    .card-custom { border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; background-color: #fff; overflow: hidden; }
+    
+    /* หัวตารางสีเทาอ่อน สะอาดตา */
+    .table-custom-header { background-color: #F8FAFC !important; color: #4A5568 !important; border-bottom: 2px solid #E2E8F0; font-weight: 600; }
+    
+    /* ปรับช่อง Select ให้ดูเป็นมาตรฐาน */
+    .form-select-custom { border-color: #CBD5E0; border-radius: 4px; }
+    .form-select-custom:focus { border-color: #2B6CB0; box-shadow: 0 0 0 0.2rem rgba(43, 108, 176, 0.25); }
 </style>
 
 <div class="container mt-4 mb-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">🕒</span> บันทึกเวลาทำงาน</h2>
+    <div class="mb-4">
+        <h3 class="fw-bold text-corporate-blue mb-1">บันทึกเวลาทำงาน</h3>
+        <p class="text-muted small">ระบบจัดการเวลาเข้า-ออกงานของพนักงาน</p>
     </div>
 
-    <!-- 🟢 ส่วนแสดงข้อความแจ้งเตือน (Messages Alert) -->
+    <!-- ส่วนแสดงข้อความแจ้งเตือน (Messages Alert) -->
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-4 shadow-sm" role="alert" style="border-radius: 1rem; font-weight: 500;">
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-4 shadow-sm" role="alert" style="border-radius: 0.5rem; font-weight: 500; border: 1px solid rgba(0,0,0,0.1);">
                 {% if message.tags == 'success' %}
                     <i class="bi bi-check-circle-fill me-2"></i>
                 {% elif message.tags == 'error' %}
@@ -30,18 +42,18 @@
         {% endfor %}
     {% endif %}
 
-    <div class="card card-custom mb-4 bg-light bg-opacity-50">
-        <div class="card-body p-4">
+    <div class="card card-custom mb-4">
+        <div class="card-body p-4 bg-light">
             <form method="POST" action="" class="d-flex flex-wrap gap-3 align-items-center">
                 {% csrf_token %}
-                <select name="employee_id" class="form-select w-auto rounded-pill shadow-sm" required>
+                <select name="employee_id" class="form-select form-select-custom w-auto shadow-sm" required>
                     <option value="">-- เลือกพนักงาน --</option>
                     {% for emp in employees %}
                         <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
                     {% endfor %}
                 </select>
-                <button type="submit" name="action" value="check_in" class="btn btn-pastel-purple rounded-pill px-4 shadow-sm">📥 เข้างาน</button>
-                <button type="submit" name="action" value="check_out" class="btn btn-pastel-yellow rounded-pill px-4 shadow-sm">📤 ออกงาน</button>
+                <button type="submit" name="action" value="check_in" class="btn btn-primary-corporate px-4 shadow-sm" style="border-radius: 4px;">เข้างาน</button>
+                <button type="submit" name="action" value="check_out" class="btn btn-secondary-corporate px-4 shadow-sm" style="border-radius: 4px;">ออกงาน</button>
             </form>
         </div>
     </div>
@@ -52,19 +64,23 @@
                 <table class="table table-hover align-middle text-center mb-0">
                     <thead class="table-custom-header">
                         <tr>
-                            <th class="py-3" style="border-top-left-radius: 1.2rem;">วันที่</th>
+                            <th class="py-3">วันที่</th>
                             <th class="py-3">พนักงาน</th>
                             <th class="py-3">เวลาเข้างาน</th>
-                            <th class="py-3" style="border-top-right-radius: 1.2rem;">เวลาออกงาน</th>
+                            <th class="py-3">เวลาออกงาน</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for att in attendances %}
                         <tr>
-                            <td>{{ att.date|date:"d M Y" }}</td>
-                            <td class="fw-semibold text-start ps-4">{{ att.employee.first_name }} {{ att.employee.last_name }}</td>
+                            <td class="text-secondary">{{ att.date|date:"d M Y" }}</td>
+                            <td class="fw-semibold text-corporate-blue text-start ps-4">{{ att.employee.first_name }} {{ att.employee.last_name }}</td>
                             <td>{{ att.check_in|time:"H:i"|default:"-" }}</td>
                             <td>{{ att.check_out|time:"H:i"|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-5 text-muted text-center">ไม่มีข้อมูลบันทึกเวลา</td>
                         </tr>
                         {% endfor %}
                     </tbody>
