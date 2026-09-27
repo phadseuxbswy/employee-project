@@ -1,77 +1,35 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
 <style>
-    .text-pastel-purple { color: #8e629f !important; }
-    .text-pastel-yellow { color: #a88b00 !important; } 
-    
-    .bg-pastel-purple { background-color: #E2D1F9 !important; }
-    .bg-pastel-yellow { background-color: #FEF3B3 !important; }
-    
-    .border-pastel-purple { border-color: #d1b3ff !important; }
-    .border-pastel-yellow { border-color: #FCE679 !important; }
-    
-    .btn-pastel-purple { background-color: #d1b3ff; color: #5a3d6b; border: none; transition: 0.3s; }
-    .btn-pastel-purple:hover { background-color: #c099ff; color: #fff; }
-
-    .btn-pastel-yellow { background-color: #FCE679; color: #5c4e00; border: none; transition: 0.3s; }
-    .btn-pastel-yellow:hover { background-color: #FCDA49; color: #423800; }
-{% extends 'basetemplate.html' %}
-{% block content %}
-<style>
     /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
     .text-corporate-blue { color: #1A365D !important; }
     .text-corporate-secondary { color: #4A5568 !important; }
     
-    .btn-primary-corporate { background-color: #2B6CB0; color: #fff; border: none; transition: 0.2s; font-weight: 500; }
+    .border-corporate-blue { border-color: #1A365D !important; }
+    .border-corporate-secondary { border-color: #2B6CB0 !important; }
+    
+    .btn-primary-corporate { background-color: #2B6CB0; color: #fff; border: none; transition: 0.3s; }
     .btn-primary-corporate:hover { background-color: #2C5282; color: #fff; }
 
-    .btn-secondary-corporate { background-color: #EDF2F7; color: #2D3748; border: 1px solid #CBD5E0; transition: 0.2s; font-weight: 500; }
+    .btn-secondary-corporate { background-color: #EDF2F7; color: #2D3748; border: 1px solid #CBD5E0; transition: 0.3s; font-weight: 500; }
     .btn-secondary-corporate:hover { background-color: #E2E8F0; color: #1A202C; }
 
-    /* การ์ดแบบทางการ */
-    .card-custom { 
-        border-radius: 0.5rem; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-        transition: transform 0.3s; 
-        border: 1px solid #E2E8F0; 
-        background-color: #fff; 
-    }
-    .card-custom:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-        border-color: #CBD5E0; 
-    }
+    .card-custom { border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; background-color: #fff; transition: transform 0.3s; }
+    .card-custom:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #CBD5E0; }
 
-    /* หัวตาราง */
-    .table-custom-header { 
-        background-color: #F8FAFC !important; 
-        color: #4A5568 !important; 
-        border-bottom: 2px solid #E2E8F0; 
-        font-weight: 600; 
-    }
-
-    /* สไตล์ช่องกรอกข้อมูล */
-    .form-control-custom, .form-select-custom {
-        border-color: #CBD5E0;
-        border-radius: 4px;
-    }
-    .form-control-custom:focus, .form-select-custom:focus {
-        border-color: #2B6CB0;
-        box-shadow: 0 0 0 0.2rem rgba(43, 108, 176, 0.25);
-    }
+    .table-custom-header { background-color: #F8FAFC !important; color: #4A5568 !important; border-bottom: 2px solid #E2E8F0; }
 </style>
 
 <div class="container mt-4 mb-5">
-    <!-- หัวข้อหน้า -->
     <div class="text-center mb-4">
-        <h3 class="fw-bold text-corporate-blue">พอร์ทัลพนักงาน (ESS)</h3>
+        <h2 class="fw-bold text-corporate-blue"><span style="font-size: 1.8rem;"></span> พอร์ทัลพนักงาน (ESS)</h2>
         <p class="text-muted">ระบบจัดการเวลาทำงานและยื่นเอกสารคำขอออนไลน์</p>
     </div>
 
-    <!-- ส่วนแสดงข้อความแจ้งเตือน (Messages Alert) -->
+    <!-- 🟢 ส่วนแสดงข้อความแจ้งเตือน (Messages Alert) -->
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-4 shadow-sm" role="alert" style="border-radius: 0.5rem; font-weight: 500; border: 1px solid rgba(0,0,0,0.1);">
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-4 shadow-sm" role="alert" style="border-radius: 0.5rem; font-weight: 500;">
                 {% if message.tags == 'success' %}
                     <i class="bi bi-check-circle-fill me-2"></i>
                 {% elif message.tags == 'error' %}
@@ -84,9 +42,9 @@
     {% endif %}
 
     <div class="row g-4 mb-5">
-        <!-- ลงเวลา -->
+        <!-- ลงเวลา (กรมท่า) -->
         <div class="col-md-6">
-            <div class="card card-custom h-100" style="border-top: 4px solid #1A365D;">
+            <div class="card card-custom border-0 border-top border-4 border-corporate-blue h-100">
                 <div class="card-body p-4 bg-light">
                     <div class="text-center mb-4">
                         <h5 class="fw-bold text-corporate-blue">ระบบลงเวลา (Clock-In/Out)</h5>
@@ -95,8 +53,8 @@
                     <form method="POST" action="">
                         {% csrf_token %}
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-corporate-secondary">ยืนยันตัวตน (เลือกชื่อคุณ) <span class="text-danger">*</span></label>
-                            <select name="employee_id" class="form-select form-select-custom form-select-lg shadow-sm" required>
+                            <label class="form-label fw-bold text-secondary">ยืนยันตัวตน (เลือกชื่อคุณ) *</label>
+                            <select name="employee_id" class="form-select form-select-lg rounded-2 shadow-sm" required>
                                 <option value="">-- เลือกชื่อพนักงาน --</option>
                                 {% for emp in employees %}
                                     <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
@@ -104,20 +62,20 @@
                             </select>
                         </div>
                         <div class="d-flex gap-3 mt-4">
-                            <button type="submit" name="action" value="check_in" class="btn btn-primary-corporate w-50 py-2 fw-bold rounded-2 shadow-sm">เข้างาน</button>
-                            <button type="submit" name="action" value="check_out" class="btn btn-secondary-corporate w-50 py-2 fw-bold rounded-2 shadow-sm">ออกงาน</button>
+                            <button type="submit" name="action" value="check_in" class="btn btn-primary-corporate w-50 py-3 fw-bold rounded-2 shadow-sm">เข้างาน</button>
+                            <button type="submit" name="action" value="check_out" class="btn btn-secondary-corporate w-50 py-3 fw-bold rounded-2 shadow-sm">ออกงาน</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- ยื่นคำขอ -->
+        <!-- ยื่นคำขอ (น้ำเงินอ่อน/เทา) -->
         <div class="col-md-6">
-            <div class="card card-custom h-100" style="border-top: 4px solid #2B6CB0;">
+            <div class="card card-custom border-0 border-top border-4 border-corporate-secondary h-100">
                 <div class="card-body p-4 bg-light">
                     <div class="text-center mb-4">
-                        <h5 class="fw-bold text-corporate-blue">ยื่นคำขอ / แนบเอกสาร</h5>
+                        <h5 class="fw-bold text-corporate-secondary">ยื่นคำขอ / แนบเอกสาร</h5>
                         <small class="text-muted">ส่งคำขอลางาน, เบิกค่าใช้จ่าย, ขอทำ OT</small>
                     </div>
                     <form method="POST" action="" enctype="multipart/form-data">
@@ -125,7 +83,7 @@
                         <input type="hidden" name="action" value="submit_request">
                         <div class="row mb-3 g-2">
                             <div class="col-sm-6">
-                                <select name="employee_id" class="form-select form-select-custom shadow-sm" required>
+                                <select name="employee_id" class="form-select rounded-2 shadow-sm" required>
                                     <option value="">-- เลือกพนักงาน --</option>
                                     {% for emp in employees %}
                                         <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
@@ -133,7 +91,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <select name="request_type" class="form-select form-select-custom shadow-sm" required>
+                                <select name="request_type" class="form-select rounded-2 shadow-sm" required>
                                     <option value="leave">ขอลางาน</option>
                                     <option value="ot">ขอทำ OT</option>
                                     <option value="expense">ขอเบิกค่าใช้จ่าย</option>
@@ -142,13 +100,13 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <input type="text" name="title" class="form-control form-control-custom shadow-sm" placeholder="รายละเอียด (เช่น ลาป่วย, เบิกค่าเดินทาง)" required>
+                            <input type="text" name="title" class="form-control rounded-2 shadow-sm" placeholder="รายละเอียด" required>
                         </div>
                         <div class="mb-3">
-                            <input type="number" name="amount" class="form-control form-control-custom shadow-sm" placeholder="จำนวน (วัน / ชั่วโมง / บาท)" required>
+                            <input type="number" name="amount" class="form-control rounded-2 shadow-sm" placeholder="จำนวน" required>
                         </div>
                         <div class="mb-4">
-                            <input type="file" name="attachment" class="form-control form-control-custom shadow-sm">
+                            <input type="file" name="attachment" class="form-control rounded-2 shadow-sm">
                         </div>
                         <button type="submit" class="btn btn-primary-corporate w-100 py-2 fw-bold shadow-sm rounded-2 mt-1">
                             ส่งคำขอให้ HR อนุมัติ
@@ -160,193 +118,41 @@
     </div>
 
     <!-- ตารางประวัติ -->
-    <div class="card card-custom mb-5">
+    <div class="card card-custom border-0 border-top border-4 border-corporate-blue mb-5">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอ (Recent Requests)</h5>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="text-center table-custom-header">
+                <table class="table table-hover align-middle">
+                    <thead class="table-custom-header text-center">
                         <tr>
-                            <th class="py-3">วันที่</th>
+                            <th class="py-3" style="border-top-left-radius: 4px;">วันที่</th>
                             <th class="py-3">พนักงาน</th>
                             <th class="py-3">ประเภท</th>
                             <th class="py-3">รายละเอียด</th>
                             <th class="py-3">ไฟล์แนบ</th>
-                            <th class="py-3">สถานะ</th>
+                            <th class="py-3" style="border-top-right-radius: 4px;">สถานะ</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">
                         {% for req in recent_requests %}
                         <tr>
-                            <td class="text-secondary">{{ req.created_at|date:"d M Y" }}</td>
-                            <td class="text-start ps-4"><span class="fw-semibold text-corporate-blue">{{ req.employee.first_name }} {{ req.employee.last_name }}</span></td>
+                            <td class="text-secondary">{{ req.created_at|date:"d/m/Y" }}</td>
+                            <td><span class="fw-semibold text-corporate-blue">{{ req.employee.first_name }} {{ req.employee.last_name }}</span></td>
                             <td>
-                                {% if req.request_type == 'leave' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-2">ลางาน</span>
-                                {% elif req.request_type == 'ot' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-2">ขอ OT</span>
-                                {% elif req.request_type == 'expense' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-2">เบิกจ่าย</span>
-                                {% else %} <span class="badge bg-light text-dark border rounded-2 px-3 py-2">อื่นๆ</span> {% endif %}
+                                {% if req.request_type == 'leave' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-1">ลางาน</span>
+                                {% elif req.request_type == 'ot' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-1">ขอ OT</span>
+                                {% elif req.request_type == 'expense' %} <span class="badge bg-light text-dark border rounded-2 px-3 py-1">เบิกจ่าย</span>
+                                {% else %} <span class="badge bg-secondary rounded-2 px-3 py-1">อื่นๆ</span> {% endif %}
                             </td>
                             <td class="text-start text-secondary">{{ req.title }}</td>
                             <td>
-                                {% if req.attachment %} 
-                                    <a href="{{ req.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-2 px-3">ดูไฟล์</a>
-                                {% else %} 
-                                    <span class="text-muted">-</span> 
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if req.status == 'pending' %} <span class="badge bg-warning text-dark px-3 py-2 rounded-2">รออนุมัติ</span>
-                                {% elif req.status == 'approved' %} <span class="badge bg-success px-3 py-2 rounded-2">อนุมัติแล้ว</span>
-                                {% else %} <span class="badge bg-danger px-3 py-2 rounded-2">ไม่อนุมัติ</span> {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="6" class="text-muted py-5 text-center">ไม่มีประวัติการยื่นคำขอ</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-    .card-custom { border-radius: 1.2rem; box-shadow: 0 5px 20px rgba(0,0,0,0.05); transition: transform 0.3s; }
-    .card-custom:hover { transform: translateY(-5px); }
-</style>
-
-<div class="container mt-4 mb-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-pastel-purple"><span style="font-size: 1.8rem;">💻</span> พอร์ทัลพนักงาน (ESS)</h2>
-        <p class="text-muted">ระบบจัดการเวลาทำงานและยื่นเอกสารคำขอออนไลน์</p>
-    </div>
-
-    <!-- 🟢 ส่วนแสดงข้อความแจ้งเตือน (Messages Alert) -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-4 shadow-sm" role="alert" style="border-radius: 1rem; font-weight: 500;">
-                {% if message.tags == 'success' %}
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                {% elif message.tags == 'error' %}
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                {% endif %}
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <div class="row g-4 mb-5">
-        <!-- ลงเวลา (ม่วง) -->
-        <div class="col-md-6">
-            <div class="card card-custom border-0 border-top border-4 border-pastel-purple h-100">
-                <div class="card-body p-4 bg-light bg-opacity-50">
-                    <div class="text-center mb-4">
-                        <h5 class="fw-bold text-pastel-purple">🕒 ระบบลงเวลา (Clock-In/Out)</h5>
-                        <small class="text-muted">บันทึกเวลาเข้า-ออกงาน</small>
-                    </div>
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">ยืนยันตัวตน (เลือกชื่อคุณ) *</label>
-                            <select name="employee_id" class="form-select form-select-lg rounded-pill shadow-sm" required>
-                                <option value="">-- เลือกชื่อพนักงาน --</option>
-                                {% for emp in employees %}
-                                    <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="d-flex gap-3 mt-4">
-                            <button type="submit" name="action" value="check_in" class="btn btn-pastel-purple w-50 py-3 fw-bold rounded-pill shadow-sm">📥 เข้างาน</button>
-                            <button type="submit" name="action" value="check_out" class="btn btn-pastel-yellow w-50 py-3 fw-bold rounded-pill shadow-sm">📤 ออกงาน</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- ยื่นคำขอ (เหลือง) -->
-        <div class="col-md-6">
-            <div class="card card-custom border-0 border-top border-4 border-pastel-yellow h-100">
-                <div class="card-body p-4 bg-light bg-opacity-50">
-                    <div class="text-center mb-4">
-                        <h5 class="fw-bold text-pastel-yellow">📄 ยื่นคำขอ / แนบเอกสาร</h5>
-                        <small class="text-muted">ส่งคำขอลางาน, เบิกค่าใช้จ่าย, ขอทำ OT</small>
-                    </div>
-                    <form method="POST" action="" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="submit_request">
-                        <div class="row mb-3 g-2">
-                            <div class="col-sm-6">
-                                <select name="employee_id" class="form-select rounded-pill shadow-sm" required>
-                                    <option value="">-- เลือกพนักงาน --</option>
-                                    {% for emp in employees %}
-                                        <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-sm-6">
-                                <select name="request_type" class="form-select rounded-pill shadow-sm" required>
-                                    <option value="leave">ขอลางาน</option>
-                                    <option value="ot">ขอทำ OT</option>
-                                    <option value="expense">ขอเบิกค่าใช้จ่าย</option>
-                                    <option value="other">อื่นๆ</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" name="title" class="form-control rounded-pill shadow-sm" placeholder="รายละเอียด" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="number" name="amount" class="form-control rounded-pill shadow-sm" placeholder="จำนวน" required>
-                        </div>
-                        <div class="mb-4">
-                            <input type="file" name="attachment" class="form-control rounded-pill shadow-sm">
-                        </div>
-                        <button type="submit" class="btn btn-pastel-yellow w-100 py-2 fw-bold shadow-sm rounded-pill mt-1">
-                            ส่งคำขอให้ HR อนุมัติ 📨
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ตารางประวัติ (ม่วง) -->
-    <div class="card card-custom border-0 border-top border-4 border-pastel-purple mb-5">
-        <div class="card-body p-4">
-            <h5 class="fw-bold mb-4 text-pastel-purple">📋 ประวัติคำขอ (Recent Requests)</h5>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead style="background-color: #E2D1F9; color: #5a3d6b;" class="text-center">
-                        <tr>
-                            <th class="py-3" style="border-top-left-radius: 10px;">วันที่</th>
-                            <th class="py-3">พนักงาน</th>
-                            <th class="py-3">ประเภท</th>
-                            <th class="py-3">รายละเอียด</th>
-                            <th class="py-3">ไฟล์แนบ</th>
-                            <th class="py-3" style="border-top-right-radius: 10px;">สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center">
-                        {% for req in recent_requests %}
-                        <tr>
-                            <td>{{ req.created_at|date:"d/m/Y" }}</td>
-                            <td><span class="fw-semibold">{{ req.employee.first_name }} {{ req.employee.last_name }}</span></td>
-                            <td>
-                                {% if req.request_type == 'leave' %} <span class="badge bg-pastel-yellow text-dark rounded-pill px-3">ลางาน</span>
-                                {% elif req.request_type == 'ot' %} <span class="badge bg-pastel-purple text-dark rounded-pill px-3">ขอ OT</span>
-                                {% elif req.request_type == 'expense' %} <span class="badge bg-info text-dark rounded-pill px-3">เบิกจ่าย</span>
-                                {% else %} <span class="badge bg-secondary rounded-pill px-3">อื่นๆ</span> {% endif %}
-                            </td>
-                            <td class="text-start">{{ req.title }}</td>
-                            <td>
-                                {% if req.attachment %} <a href="{{ req.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3">📄 ดูไฟล์</a>
+                                {% if req.attachment %} <a href="{{ req.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-2 px-3">ดูไฟล์</a>
                                 {% else %} <span class="text-muted">-</span> {% endif %}
                             </td>
                             <td>
-                                {% if req.status == 'pending' %} <span class="badge bg-warning text-dark px-2 py-1 rounded-pill">⏳ รออนุมัติ</span>
-                                {% elif req.status == 'approved' %} <span class="badge bg-success px-2 py-1 rounded-pill">✅ อนุมัติแล้ว</span>
-                                {% else %} <span class="badge bg-danger px-2 py-1 rounded-pill">❌ ไม่อนุมัติ</span> {% endif %}
+                                {% if req.status == 'pending' %} <span class="badge bg-warning text-dark px-2 py-1 rounded-2">รออนุมัติ</span>
+                                {% elif req.status == 'approved' %} <span class="badge bg-success px-2 py-1 rounded-2">อนุมัติแล้ว</span>
+                                {% else %} <span class="badge bg-danger px-2 py-1 rounded-2">ไม่อนุมัติ</span> {% endif %}
                             </td>
                         </tr>
                         {% empty %}
