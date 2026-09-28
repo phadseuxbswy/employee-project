@@ -7,6 +7,7 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = '__all__'
+        exclude = ['employee_id']
         widgets = {
             # 🔴 หมายเหตุ: ถ้าใน models.py คุณแพทตั้งชื่อฟิลด์วันเกิดว่า "dob" ให้แก้คำว่า 'birth_date' เป็น 'dob' ด้วยนะครับ
             'birth_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),

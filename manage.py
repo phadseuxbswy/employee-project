@@ -2,7 +2,12 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import mimetypes
 
+mimetypes.init()
+mimetypes.types_map['.css'] = 'text/css'
+mimetypes.types_map['.js'] = 'application/javascript'
+mimetypes.types_map['.svg'] = 'image/svg+xml'
 
 def main():
     """Run administrative tasks."""

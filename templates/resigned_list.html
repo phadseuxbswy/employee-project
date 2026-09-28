@@ -4,21 +4,54 @@
     /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
     .text-corporate-blue { color: #1A365D !important; }
     
-    /* ปุ่มค้นหา */
+    /* ปุ่มค้นหาและปุ่มหลัก */
     .btn-primary-corporate { background-color: #2B6CB0; color: #fff; border: none; transition: 0.2s; font-weight: 500; }
     .btn-primary-corporate:hover { background-color: #2C5282; color: #fff; }
-
-    /* ปรับขอบการ์ดให้เรียบหรูทางการ */
-    .card-custom { border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; border: 1px solid #E2E8F0; background-color: #fff; }
-    .card-custom:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #CBD5E0; }
     
-    /* รูปพนักงานลาออก (สีเทา) */
-    .emp-photo { height: 200px; object-fit: cover; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border-bottom: 1px solid #E2E8F0; filter: grayscale(80%); opacity: 0.9; }
-    .emp-label { font-size: 0.85rem; color: #718096; margin-bottom: 0.1rem; }
-    .emp-data { font-size: 0.95rem; font-weight: 600; color: #2D3748; margin-bottom: 0.8rem; }
+    /* สไตล์ตาราง */
+    .card-custom { border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; background-color: #fff; }
+    .table-custom-header { background-color: #F8FAFC !important; color: #4A5568 !important; border-bottom: 2px solid #E2E8F0; }
     
     /* สไตล์ป้ายกำกับแผนกแบบเรียบหรู */
-    .badge-department { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; font-weight: 500; }
+    .badge-department { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; font-weight: 500; font-size: 0.85rem; padding: 0.35em 0.8em; border-radius: 20px; }
+
+    /* รูปโปรไฟล์ย่อในตาราง */
+    .table-avatar {
+        width: 38px;
+        height: 38px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 1px solid #CBD5E0;
+    }
+    .table-avatar-placeholder {
+        width: 38px;
+        height: 38px;
+        background-color: #CBD5E0;
+        color: #2D3748;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+    }
+
+    /* ปุ่มแก้ไขข้อมูลในตาราง */
+    .btn-edit {
+        color: #4A5568;
+        border: 1px solid #CBD5E0;
+        background-color: #fff;
+        border-radius: 4px;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        padding: 3px 12px;
+        text-decoration: none;
+    }
+    .btn-edit:hover {
+        color: #2B6CB0;
+        border-color: #2B6CB0;
+        background-color: #EBF4FF;
+    }
 
     /* ปรับแต่ง Pagination */
     .page-link-corporate { color: #2B6CB0; border: 1px solid #E2E8F0; margin: 0 2px; border-radius: 4px; }
@@ -27,51 +60,76 @@
 </style>
 
 <div class="container mt-4 mb-5">
+    <!-- ส่วนหัวและแถบค้นหา -->
     <div class="row mb-4 align-items-center g-3">
         <div class="col-md-6">
             <h3 class="fw-bold text-corporate-blue mb-0">รายชื่อพนักงานที่ลาออก</h3>
         </div>
         <div class="col-md-6">
-            <div class="d-flex justify-content-md-end gap-2 flex-wrap">
-                <form method="GET" action="{% url 'resigned_list' %}" class="d-flex flex-grow-1" style="max-width: 400px;">
-                    <input type="text" name="q" class="form-control shadow-sm" style="border-radius: 4px; border-color: #CBD5E0;" placeholder="ค้นหาชื่อ, แผนก, ตำแหน่ง..." value="{{ query|default:'' }}">
+            <div class="d-flex justify-content-md-end gap-2">
+                <form method="GET" class="d-flex flex-grow-1" style="max-width: 400px;">
+                    <input type="text" name="q" class="form-control shadow-sm" style="border-radius: 4px; border-color: #CBD5E0;" placeholder="ค้นหาชื่อ, ตำแหน่ง, แผนก..." value="{{ query|default:'' }}">
                     <button type="submit" class="btn btn-primary-corporate shadow-sm ms-2" style="border-radius: 4px;">ค้นหา</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        {% for emp in page_obj %}
-        <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card card-custom h-100 bg-light">
-                {% if emp.photo %}
-                    <img src="{{ emp.photo.url }}" class="emp-photo w-100" alt="รูปพนักงาน">
-                {% else %}
-                    <div class="emp-photo w-100 bg-secondary bg-opacity-25 d-flex justify-content-center align-items-center text-muted">
-                        <span style="font-size: 3rem;">👤</span>
-                    </div>
-                {% endif %}
-                
-                <div class="card-body p-3 position-relative">
-                    <!-- ป้ายกำกับว่าลาออกแล้ว -->
-                    <span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2 rounded-2">ลาออก</span>
-                    
-                    <h5 class="fw-bold text-corporate-blue mb-3 text-truncate">{{ emp.title }}{{ emp.first_name }} {{ emp.last_name }}</h5>
-                    <div class="row">
-                        <div class="col-6"><p class="emp-label">เพศ :</p><p class="emp-data">{{ emp.get_gender_display|default:"-" }}</p></div>
-                        <div class="col-6"><p class="emp-label">แผนก :</p>
-                            <p class="emp-data"><span class="badge badge-department rounded-2 px-3 py-1">{{ emp.get_department_display|default:"-" }}</span></p>
-                        </div>
-                    </div>
-                </div>
+    <!-- ตารางแสดงรายชื่อพนักงานที่ลาออก -->
+    <div class="card card-custom">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-custom-header">
+                        <tr>
+                            <th class="py-3 ps-4">รหัสพนักงาน</th>
+                            <th class="py-3">ชื่อ-นามสกุล</th>
+                            <th class="py-3">ตำแหน่ง</th>
+                            <th class="py-3">เบอร์โทรศัพท์</th>
+                            <th class="py-3 text-center">แผนก</th>
+                            <th class="py-3 text-end pe-4">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in page_obj %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-secondary">
+                                {{ emp.employee_id|default:"-" }}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if emp.photo %}
+                                        <img src="{{ emp.photo.url }}" class="table-avatar me-3" alt="รูปพนักงาน">
+                                    {% else %}
+                                        <div class="table-avatar-placeholder me-3">EMP</div>
+                                    {% endif %}
+                                    <span class="fw-semibold text-corporate-blue">
+                                        {{ emp.title }}{{ emp.first_name }} {{ emp.last_name }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-secondary">{{ emp.position|default:"-" }}</td>
+                            <td class="text-secondary">{{ emp.phone_number|default:"-" }}</td>
+                            <td class="text-center">
+                                <span class="badge badge-department">{{ emp.get_department_display|default:"-" }}</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if user.is_staff %}
+                                <a href="{% url 'update' emp.pk %}" class="btn-edit">แก้ไขข้อมูล</a>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-muted py-5 text-center">ไม่พบข้อมูลพนักงานที่ลาออก</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <h5 class="text-muted">ไม่พบข้อมูลพนักงานที่ลาออก</h5>
-        </div>
-        {% endfor %}
     </div>
 
     <!-- Pagination -->

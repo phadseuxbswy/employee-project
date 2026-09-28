@@ -27,9 +27,21 @@
                     </div>
                     <div class="row mb-3 border-bottom pb-2">
                         <div class="col-sm-4 text-muted">วันเกิด</div>
-                        <div class="col-sm-8">{{ employee.birth_date }}</div>
+                        <div class="col-sm-8">{{ employee.birth_date|default:"-" }}</div>
                     </div>
-                    <!-- เพิ่มวันที่เริ่มทำงานเข้ามาตรงนี้ -->
+                    
+                    <!-- 🟢 เพิ่มช่อง "อีเมล" ตรงนี้ -->
+                    <div class="row mb-3 border-bottom pb-2">
+                        <div class="col-sm-4 text-muted">อีเมล</div>
+                        <div class="col-sm-8">{{ employee.email|default:"-" }}</div>
+                    </div>
+
+                    <!-- 🟢 เพิ่มช่อง "ที่อยู่" ตรงนี้ -->
+                    <div class="row mb-3 border-bottom pb-2">
+                        <div class="col-sm-4 text-muted">ที่อยู่</div>
+                        <div class="col-sm-8">{{ employee.address|default:"-" }}</div>
+                    </div>
+
                     <div class="row mb-3 border-bottom pb-2">
                         <div class="col-sm-4 text-muted">วันที่เริ่มทำงาน</div>
                         <div class="col-sm-8">{{ employee.hire_date|default:"-" }}</div>
@@ -75,7 +87,7 @@
             <!-- ปุ่มจัดการ -->
             <div class="card-footer text-center py-3 bg-light">
                 <a href="{% url 'index' %}" class="btn btn-secondary px-4 me-2">กลับหน้าหลัก</a>
-                {% if perms.myapp.change_employee %}
+                {% if user.is_staff %}
                     <a href="{% url 'update' employee.pk %}" class="btn btn-warning px-4">แก้ไขข้อมูล</a>
                 {% endif %}
             </div>

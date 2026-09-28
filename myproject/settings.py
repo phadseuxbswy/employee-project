@@ -1,3 +1,9 @@
+import mimetypes
+mimetypes.init()
+mimetypes.types_map['.css'] = 'text/css'
+mimetypes.types_map['.js'] = 'application/javascript'
+mimetypes.types_map['.svg'] = 'image/svg+xml'
+
 """
 Django settings for myproject project.
 
@@ -24,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!3stao*3%n-u9_67y+16r3ftbz9nkb2sxu@nn&i%^7qd#b$vse'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -135,3 +141,6 @@ LOGIN_URL = 'login'
 LANGUAGE_CODE = 'th'
 TIME_ZONE = 'Asia/Bangkok'
 LOGIN_REDIRECT_URL = 'dashboard'
+
+import mimetypes
+mimetypes.add_type("text/css", ".css", True)

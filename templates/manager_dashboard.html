@@ -1,0 +1,109 @@
+{% extends 'basetemplate.html' %}
+{% block content %}
+<style>
+    /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
+    .text-corporate-blue { color: #1A365D !important; }
+    .text-corporate-secondary { color: #4A5568 !important; }
+    
+    .card-custom { 
+        border-radius: 0.5rem; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        border: 1px solid #E2E8F0; 
+        background-color: #fff; 
+    }
+    .card-stat { transition: 0.2s; border-left: 4px solid; }
+    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+    .border-blue { border-left-color: #1A365D !important; }
+    .border-green { border-left-color: #2F855A !important; }
+    .border-yellow { border-left-color: #D69E2E !important; }
+    .border-red { border-left-color: #C53030 !important; }
+
+    .table-custom-header { background-color: #F8FAFC !important; color: #4A5568 !important; border-bottom: 2px solid #E2E8F0; }
+    
+    .status-badge { font-weight: 500; font-size: 0.85rem; padding: 0.35em 0.8em; }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="mb-4">
+        <h3 class="fw-bold text-corporate-blue mb-1">แดชบอร์ดจัดการทีม</h3>
+        <p class="text-muted small">ภาพรวมและสถานะการทำงานของลูกทีมใน <strong>{{ department_name }}</strong> ประจำวันนี้</p>
+    </div>
+
+    <!-- ส่วนที่ 1: สรุปสถิติรายวัน -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card card-custom card-stat border-blue h-100 p-3">
+                <div class="text-muted small fw-semibold mb-1">ลูกทีมทั้งหมด</div>
+                <h3 class="fw-bold text-corporate-blue mb-0">{{ stats.total }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom card-stat border-green h-100 p-3">
+                <div class="text-muted small fw-semibold mb-1">เข้างานแล้ว (Check-in)</div>
+                <h3 class="fw-bold text-success mb-0">{{ stats.present }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom card-stat border-yellow h-100 p-3">
+                <div class="text-muted small fw-semibold mb-1">ลางาน (Leave)</div>
+                <h3 class="fw-bold text-warning mb-0">{{ stats.leave }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom card-stat border-red h-100 p-3">
+                <div class="text-muted small fw-semibold mb-1">ยังไม่เข้างาน / ขาด</div>
+                <h3 class="fw-bold text-danger mb-0">{{ stats.absent }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- ส่วนที่ 2: ทำเนียบพนักงานในแผนก -->
+    <div class="card card-custom">
+        <div class="card-header bg-white border-bottom py-3">
+            <h6 class="mb-0 fw-semibold text-corporate-blue">ทำเนียบพนักงาน (Team Directory)</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-custom-header text-center">
+                        <tr>
+                            <th class="py-3 text-start ps-4">ชื่อ-นามสกุล</th>
+                            <th class="py-3">แผนก</th>
+                            <th class="py-3">เบอร์ติดต่อ</th>
+                            <th class="py-3">สถานะวันนี้</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for emp in team_members %}
+                        <tr>
+                            <td class="text-start ps-4 fw-semibold text-corporate-blue">
+                                {{ emp.first_name }} {{ emp.last_name }}
+                            </td>
+                            <!-- 🟢 ดึงชื่อแผนกจากฐานข้อมูลมาแสดง -->
+                            <td class="text-secondary">{{ emp.get_department_display }}</td>
+                            <!-- 🟢 แก้ไขตรงนี้เป็น phone_number ตามใน models.py -->
+                            <td class="text-secondary">{{ emp.phone_number|default:"-" }}</td>
+                            <td>
+                                <!-- จำลองสถานะ -->
+                                {% if forloop.counter == 1 %}
+                                    <span class="badge bg-warning text-dark rounded-2 status-badge">ลาป่วย</span>
+                                {% elif forloop.counter == 2 %}
+                                    <span class="badge bg-danger rounded-2 status-badge">ยังไม่เข้างาน</span>
+                                {% else %}
+                                    <span class="badge bg-success rounded-2 status-badge">เข้างานแล้ว</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-muted py-5 text-center">ไม่มีข้อมูลพนักงานในแผนกนี้</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

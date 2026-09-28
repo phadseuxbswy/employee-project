@@ -8,6 +8,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from .models import Employee, Department, Attendance
 
 # นำเข้า Models และ Forms
 from .models import Employee, Attendance, EmployeeRequest, Payroll
@@ -17,7 +20,6 @@ from .forms import EmployeeForm, UserProfileForm, CustomRegisterForm
 def is_admin(user):
     return user.is_staff
 # =============================================================
-
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
 def index(request):
@@ -58,7 +60,7 @@ def index(request):
 
         employees = employees.filter(search_filter)
 
-    paginator = Paginator(employees, 8)
+    paginator = Paginator(employees, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -465,3 +467,37 @@ def resigned_list(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'resigned_list.html', {'page_obj': page_obj, 'query': query})
+
+@login_required
+def manager_dashboard(request):
+    # 1. เช็คว่าคนที่ล็อกอินเข้ามา เป็นหัวหน้าของแผนกไหน
+    managed_dept = Department.objects.filter(manager=request.user).first()
+    
+    # ถ้าไม่ใช่หัวหน้าแผนก ให้เด้งกลับไปหน้า ESS พร้อมแจ้งเตือน
+    if not managed_dept:
+        messages.error(request, 'คุณไม่มีสิทธิ์เข้าถึงหน้าจัดการทีม')
+        return redirect('ess_dashboard')
+
+    # 2. ดึงรายชื่อพนักงานที่อยู่ "แผนกเดียวกับหัวหน้า" (และยังไม่ลาออก)
+    # หมายเหตุ: เพื่อให้โค้ดนี้ทำงานเป๊ะๆ ชื่อแผนกใน Dropdown ของพนักงาน ต้องตั้งให้ตรงกับชื่อแผนกในตาราง Department 
+    team_members = Employee.objects.filter(department=managed_dept.name).exclude(status='resigned')
+    
+    # 3. คำนวณสถิติของทีม
+    total_staff = team_members.count()
+    
+    # (จำลอง) ดึงคนที่ลงเวลาวันนี้จริงๆ
+    # today = timezone.now().date()
+    # present_staff = Attendance.objects.filter(employee__in=team_members, date=today).count()
+    present_staff = total_staff # ใส่เป็นค่าจำลองไปก่อน
+    
+    context = {
+        'department_name': managed_dept.name,
+        'team_members': team_members,
+        'stats': {
+            'total': total_staff,
+            'present': present_staff,
+            'leave': 0,
+            'absent': total_staff - present_staff
+        }
+    }
+    return render(request, 'manager_dashboard.html', context)

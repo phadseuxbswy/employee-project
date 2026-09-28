@@ -3,8 +3,8 @@
 <style>
     /* 💼 โทนทางการ: กรมท่า, เทา, ขาว */
     .text-corporate-blue { color: #1A365D !important; }
+    .text-corporate-secondary { color: #4A5568 !important; }
     
-    /* ขอบการ์ดเรียบง่าย ดูเป็นมืออาชีพ */
     .card-custom { 
         border-radius: 0.5rem; 
         box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
@@ -13,52 +13,84 @@
         overflow: hidden;
     }
     
-    /* หัวตารางสีเทาอ่อน */
     .table-custom-header { 
         background-color: #F8FAFC !important; 
         color: #4A5568 !important; 
         border-bottom: 2px solid #E2E8F0; 
         font-weight: 600; 
     }
+
+    /* ปุ่มสไตล์องค์กร */
+    .btn-primary-corporate { background-color: #2B6CB0; color: #fff; border: none; font-weight: 500; }
+    .btn-primary-corporate:hover { background-color: #2C5282; color: #fff; }
+    
+    .btn-outline-corporate { color: #4A5568; border: 1px solid #CBD5E0; background-color: #fff; font-weight: 500; }
+    .btn-outline-corporate:hover { background-color: #F8FAFC; color: #1A365D; border-color: #A0AEC0; }
 </style>
 
 <div class="container mt-4 mb-5">
-    <!-- หัวข้อหน้า -->
-    <div class="mb-4">
-        <h3 class="fw-bold text-corporate-blue mb-1">ระบบจัดการเงินเดือน (Payroll)</h3>
-        <p class="text-muted small">สรุปข้อมูลเงินเดือน ค่าล่วงเวลา และรายการหักของพนักงาน</p>
+    <!-- ส่วนหัวและปุ่มจัดการ (Toolbar) -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold text-corporate-blue mb-1">ระบบจัดการเงินเดือน</h3>
+            <p class="text-muted small mb-0">สรุปข้อมูลเงินเดือน ค่าล่วงเวลา และรายการหักของพนักงานทั้งหมด</p>
+        </div>
     </div>
 
     <!-- ตารางเงินเดือน -->
-    <div class="card card-custom">
+    <div class="card card-custom" style="border-top: 4px solid #1A365D;">
+        
+        <!-- แถบค้นหาด้านบนการ์ด -->
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-semibold text-corporate-blue">รายการประจำเดือนปัจจุบัน</h6>
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <input type="text" class="form-control" placeholder="ค้นหาชื่อพนักงาน..." style="border-color: #CBD5E0;">
+                <button class="btn btn-outline-corporate" type="button" style="border-color: #CBD5E0;">ค้นหา</button>
+            </div>
+        </div>
+
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center mb-0">
                     <thead class="table-custom-header">
                         <tr>
-                            <th class="py-3">ชื่อ-นามสกุล</th>
+                            <!-- ปรับการจัดวางข้อความให้เป็นมาตรฐานบัญชี -->
+                            <th class="py-3 text-start ps-4">ชื่อ-นามสกุล</th>
                             <th class="py-3">เงินเดือนฐาน</th>
                             <th class="py-3">ชั่วโมง OT</th>
-                            <th class="py-3">เงิน OT (+1.5)</th>
-                            <th class="py-3">หัก สปส.</th>
-                            <th class="py-3">หัก ภาษี</th>
-                            <th class="py-3">รับสุทธิ</th>
+                            <th class="py-3 text-success">เงิน OT (+1.5)</th>
+                            <th class="py-3 text-danger">หัก สปส.</th>
+                            <th class="py-3 text-danger">หัก ภาษี</th>
+                            <th class="py-3 text-end pe-4">รับสุทธิ</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in payrolls %}
                         <tr>
-                            <td class="fw-semibold text-corporate-blue">{{ item.employee.first_name }} {{ item.employee.last_name }}</td>
+                            <td class="text-start ps-4 fw-semibold text-corporate-blue">{{ item.employee.first_name }} {{ item.employee.last_name }}</td>
                             <td class="text-secondary">{{ item.base|floatformat:2 }}</td>
                             <td><span class="badge bg-light text-dark border px-2 py-1 rounded-2">{{ item.ot_hours|floatformat:1 }}</span></td>
                             <td class="text-success fw-semibold">+{{ item.ot_pay|floatformat:2 }}</td>
                             <td class="text-danger fw-semibold">-{{ item.sso|floatformat:2 }}</td>
                             <td class="text-danger fw-semibold">-{{ item.tax|floatformat:2 }}</td>
-                            <td class="fw-bold text-corporate-blue fs-6">{{ item.net|floatformat:2 }} ฿</td>
+                            <td class="text-end pe-4 fw-bold text-corporate-blue fs-6">{{ item.net|floatformat:2 }} ฿</td>
                         </tr>
                         {% empty %}
+                        <!-- 🌟 ดีไซน์ส่วนที่ไม่มีข้อมูล (Empty State) แบบมืออาชีพ -->
                         <tr>
-                            <td colspan="7" class="py-5 text-muted">ไม่มีข้อมูลเงินเดือนในขณะนี้</td>
+                            <td colspan="7" class="py-5">
+                                <div class="text-center py-5 my-3">
+                                    <div class="mb-3" style="opacity: 0.4;">
+                                        <!-- ใช้ไอคอนจำลองหน้ากระดาษ -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-file-earmark-text text-secondary" viewBox="0 0 16 16">
+                                            <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                                            <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2.5a.5.5 0 0 0 .5.5H12v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                        </svg>
+                                    </div>
+                                    <h5 class="fw-semibold text-corporate-secondary">ไม่มีข้อมูลเงินเดือนในขณะนี้</h5>
+                                    <p class="text-muted small">ระบบจะแสดงผลเมื่อมีการกด "คำนวณเงินเดือนรอบนี้" หรือเพิ่มข้อมูลในฐานข้อมูล</p>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

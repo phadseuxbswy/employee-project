@@ -7,11 +7,18 @@
     <!-- โหลด Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- 🟢 เพิ่มฟอนต์ TH Sarabun จาก Google Fonts ไว้ตรงนี้ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         /* 💼 โทนทางการ: พื้นหลังสีเทาอ่อน */
         body {
             background-color: #F4F6F9; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* 🟢 เรียกใช้ฟอนต์ Sarabun และปรับขนาดฟอนต์เริ่มต้น */
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
         }
 
         /* -------------------------------------
@@ -131,23 +138,60 @@
             HR MANAGEMENT
         </a>
 
-        <a href="{% url 'profile' %}" class="user-profile">
+        <!-- 🟢 แก้ไขโปรไฟล์ผู้ใช้ตรงนี้ -->
+        <a href="{% url 'profile' %}" class="user-profile" style="display: flex; align-items: center; overflow: hidden;">
             {% if current_emp and current_emp.photo %}
-                <img src="{{ current_emp.photo.url }}" class="user-avatar" style="object-fit: cover; padding: 0;">
+                <img src="{{ current_emp.photo.url }}" class="user-avatar" style="object-fit: cover; padding: 0; flex-shrink: 0;">
             {% else %}
-                <div class="user-avatar">EMP</div>
+                <div class="user-avatar" style="flex-shrink: 0;">EMP</div>
             {% endif %}
-            <div>{{ user.username }}</div>
+            
+            <!-- ชื่อผู้ใช้ -->
+            <span style="font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{ user.username }}
+            </span>
+            
+            <!-- 🟢 ป้ายสถานะถูกดันไปทางขวาสุดด้วย ms-auto -->
+            <div class="ms-auto" style="padding-left: 5px;">
+                {% if user.is_superuser %}
+                    <span class="badge bg-danger" style="font-size: 0.7rem; font-weight: 500;">แอดมิน</span>
+                {% elif user.is_staff %}
+                    <span class="badge bg-primary" style="font-size: 0.7rem; font-weight: 500;">หัวหน้า</span>
+                {% else %}
+                    <span class="badge bg-secondary" style="font-size: 0.7rem; font-weight: 500;">พนักงาน</span>
+                {% endif %}
+            </div>
         </a>
 
         <ul class="nav flex-column mb-auto">
+            <!-- 1. เมนูที่ทุกคนเห็น (ระบบพนักงาน ESS) -->
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'ess_dashboard' %}">
                     ระบบพนักงาน (ESS)
                 </a>
             </li>
 
+            <!-- 2. เมนูสำหรับ "หัวหน้า" และ "แอดมิน" (is_staff) -->
             {% if user.is_staff %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manager_dashboard' %}">
+                    แดชบอร์ดจัดการทีม
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'attendance' %}">
+                    บันทึกเวลาทำงาน
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'ot_management' %}">
+                    จัดการล่วงเวลา (OT)
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- 3. เมนูสำหรับ "แอดมินสูงสุด" เท่านั้น (is_superuser) -->
+            {% if user.is_superuser %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'dashboard' %}">
                     แดชบอร์ดสรุปข้อมูล
@@ -158,16 +202,9 @@
                     รายชื่อพนักงาน
                 </a>
             </li>
-            
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'resigned_list' %}">
                     รายชื่อพนักงานที่ลาออก
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'attendance' %}">
-                    บันทึกเวลาทำงาน
                 </a>
             </li>
             <li class="nav-item">
@@ -185,13 +222,7 @@
                     รายงานประจำเดือน
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'ot_management' %}">
-                    จัดการล่วงเวลา (OT)
-                </a>
-            </li>
             {% endif %}
-
         </ul>
 
         <hr style="margin: 15px 20px; border-color: #E2E8F0;">
