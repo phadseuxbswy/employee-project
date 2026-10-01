@@ -11,6 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import Employee, Department, Attendance
+from rest_framework import viewsets
+from .serializers import EmployeeSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, filters
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 
 # นำเข้า Models และ Forms
 from .models import Employee, Attendance, EmployeeRequest, Payroll
@@ -470,28 +475,33 @@ def resigned_list(request):
 
 @login_required
 def manager_dashboard(request):
-    # 1. เช็คว่าคนที่ล็อกอินเข้ามา เป็นหัวหน้าของแผนกไหน
-    managed_dept = Department.objects.filter(manager=request.user).first()
-    
-    # ถ้าไม่ใช่หัวหน้าแผนก ให้เด้งกลับไปหน้า ESS พร้อมแจ้งเตือน
-    if not managed_dept:
-        messages.error(request, 'คุณไม่มีสิทธิ์เข้าถึงหน้าจัดการทีม')
-        return redirect('ess_dashboard')
+    # เช็คว่าเป็นแอดมิน (Superuser) หรือไม่
+    if request.user.is_superuser:
+        department_name = "ทุกแผนก (มุมมองผู้ดูแลระบบ)"
+        # แอดมินจะเห็นพนักงานทั้งหมดที่ยังไม่ลาออก
+        team_members = Employee.objects.exclude(status='resigned')
+        
+    else:
+        # 1. เช็คว่าคนที่ล็อกอินเข้ามา เป็นหัวหน้าของแผนกไหน
+        managed_dept = Department.objects.filter(manager=request.user).first()
+        
+        # ถ้าไม่ใช่หัวหน้าแผนก และไม่ใช่แอดมิน ให้เด้งกลับไปหน้า ESS พร้อมแจ้งเตือน
+        if not managed_dept:
+            messages.error(request, 'คุณไม่มีสิทธิ์เข้าถึงหน้าจัดการทีม')
+            return redirect('ess_dashboard')
 
-    # 2. ดึงรายชื่อพนักงานที่อยู่ "แผนกเดียวกับหัวหน้า" (และยังไม่ลาออก)
-    # หมายเหตุ: เพื่อให้โค้ดนี้ทำงานเป๊ะๆ ชื่อแผนกใน Dropdown ของพนักงาน ต้องตั้งให้ตรงกับชื่อแผนกในตาราง Department 
-    team_members = Employee.objects.filter(department=managed_dept.name).exclude(status='resigned')
+        # 2. ดึงรายชื่อพนักงานที่อยู่ "แผนกเดียวกับหัวหน้า"
+        department_name = managed_dept.name
+        team_members = Employee.objects.filter(department=department_name).exclude(status='resigned')
     
     # 3. คำนวณสถิติของทีม
     total_staff = team_members.count()
     
     # (จำลอง) ดึงคนที่ลงเวลาวันนี้จริงๆ
-    # today = timezone.now().date()
-    # present_staff = Attendance.objects.filter(employee__in=team_members, date=today).count()
     present_staff = total_staff # ใส่เป็นค่าจำลองไปก่อน
     
     context = {
-        'department_name': managed_dept.name,
+        'department_name': department_name,
         'team_members': team_members,
         'stats': {
             'total': total_staff,
@@ -501,3 +511,8 @@ def manager_dashboard(request):
         }
     }
     return render(request, 'manager_dashboard.html', context)
+
+def employee_map(request, id):
+    # ดึงข้อมูลพนักงานตาม ID ที่ส่งมา
+    employee = get_object_or_404(Employee, id=id)
+    return render(request, 'employee_map.html', {'employee': employee})

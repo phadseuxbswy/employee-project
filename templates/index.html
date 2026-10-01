@@ -124,6 +124,8 @@
                             <td class="text-end pe-4">
                                 {% if user.is_staff %}
                                 <a href="{% url 'update' emp.pk %}" class="btn-edit">แก้ไขข้อมูล</a>
+                                
+                                <a href="{% url 'employee_map' emp.pk %}" class="btn btn-sm btn-outline-primary" target="_blank" style="border-radius: 4px;">📍 ดูแผนที่</a>
                                 {% else %}
                                 <span class="text-muted">-</span>
                                 {% endif %}

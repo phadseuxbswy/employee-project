@@ -46,10 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     'myapp',
+    'rest_framework',
+    'addressapp',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,3 +148,5 @@ LOGIN_REDIRECT_URL = 'dashboard'
 
 import mimetypes
 mimetypes.add_type("text/css", ".css", True)
+
+CORS_ALLOW_ALL_ORIGINS = True

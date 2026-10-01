@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบเลือกที่อยู่ (Django API)</title>
+    <!-- โหลด CSS ของ Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 50px; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card p-4">
+            <h3 class="mb-4 text-primary">กรอกข้อมูลที่อยู่</h3>
+            <div class="row g-3">
+                <!-- ช่องเลือกจังหวัด -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">จังหวัด</label>
+                    <select class="form-select" id="province">
+                        <option value="">-- เลือกจังหวัด --</option>
+                    </select>
+                </div>
+                <!-- ช่องเลือกอำเภอ -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">อำเภอ/เขต</label>
+                    <select class="form-select" id="district" disabled>
+                        <option value="">-- เลือกอำเภอ --</option>
+                    </select>
+                </div>
+                <!-- ช่องเลือกตำบล -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">ตำบล/แขวง</label>
+                    <select class="form-select" id="subdistrict" disabled>
+                        <option value="">-- เลือกตำบล --</option>
+                    </select>
+                </div>
+                <!-- ช่องรหัสไปรษณีย์ -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">รหัสไปรษณีย์</label>
+                    <input type="text" class="form-control bg-light" id="zipcode" readonly placeholder="รหัสไปรษณีย์จะขึ้นอัตโนมัติ">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- โหลดไฟล์ JS ของเรา -->
+    <script src="app.js"></script>
+</body>
+</html>

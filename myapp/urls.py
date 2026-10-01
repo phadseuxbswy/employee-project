@@ -32,6 +32,7 @@ urlpatterns = [
     path('send-support/', views.send_support_message, name='send_support'),
     path('resigned/', views.resigned_list, name='resigned_list'),
     path('manager-dashboard/', views.manager_dashboard, name='manager_dashboard'),
+    path('employee/map/<int:id>/', views.employee_map, name='employee_map'),
 ]
 
 # สำหรับแสดงรูปภาพในโหมด Production
