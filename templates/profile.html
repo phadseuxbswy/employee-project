@@ -14,15 +14,22 @@
                         <p class="text-muted mb-0 small">อัปเดตข้อมูลส่วนตัวและบัญชีผู้ใช้งานของคุณ</p>
                     </div>
                     <div>
-                        {% if user.is_staff %}
+                        {% if user.is_superuser or user.username == 'porrpatt26' %}
+                        <!-- ถ้าเป็น Superuser หรือเป็นยูสเซอร์เนมของภัทราภา ให้ขึ้นเป็น แอดมิน -->
                             <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #E2D1F9; color: #5a3d6b; font-size: 0.85rem;">
                                 🛡️ ผู้ดูแลระบบ (Admin)
                             </span>
+                        {% elif user.is_staff %}
+                        <!-- ถ้าไม่ได้เป็นแอดมิน แต่มีสิทธิ์ติ๊กเขียว (is_staff) ให้ขึ้นเป็น หัวหน้า -->
+                            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #0d6efd; color: white; font-size: 0.85rem;">
+                                👔 หัวหน้า
+                            </span>
                         {% else %}
+                            <!-- ถ้าไม่มีติ๊กเขียวเลย (กากบาทแดง) ให้ขึ้นเป็น พนักงานทั่วไป -->
                             <span class="badge rounded-pill px-3 py-2 bg-light text-secondary border shadow-sm" style="font-size: 0.85rem;">
                                 👤 พนักงานทั่วไป
                             </span>
-                        {% endif %}
+                        {% endif %}     
                     </div>
                 </div>
 

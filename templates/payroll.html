@@ -37,12 +37,52 @@
         </div>
     </div>
 
+    <!-- 🌟 ส่วนที่เพิ่มใหม่: กล่องค้นหาข้อมูลเงินเดือนย้อนหลัง 🌟 -->
+    <div class="card card-custom mb-4" style="border-top: 4px solid #2B6CB0;">
+        <div class="card-body bg-light">
+            <form method="GET" class="row g-3 align-items-center justify-content-center">
+                <div class="col-auto">
+                    <label class="fw-bold text-corporate-blue">ดูข้อมูลของเดือน:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="month" class="form-select border-corporate-secondary shadow-sm">
+                        <option value="1" {% if current_month == 1 %}selected{% endif %}>มกราคม (1)</option>
+                        <option value="2" {% if current_month == 2 %}selected{% endif %}>กุมภาพันธ์ (2)</option>
+                        <option value="3" {% if current_month == 3 %}selected{% endif %}>มีนาคม (3)</option>
+                        <option value="4" {% if current_month == 4 %}selected{% endif %}>เมษายน (4)</option>
+                        <option value="5" {% if current_month == 5 %}selected{% endif %}>พฤษภาคม (5)</option>
+                        <option value="6" {% if current_month == 6 %}selected{% endif %}>มิถุนายน (6)</option>
+                        <option value="7" {% if current_month == 7 %}selected{% endif %}>กรกฎาคม (7)</option>
+                        <option value="8" {% if current_month == 8 %}selected{% endif %}>สิงหาคม (8)</option>
+                        <option value="9" {% if current_month == 9 %}selected{% endif %}>กันยายน (9)</option>
+                        <option value="10" {% if current_month == 10 %}selected{% endif %}>ตุลาคม (10)</option>
+                        <option value="11" {% if current_month == 11 %}selected{% endif %}>พฤศจิกายน (11)</option>
+                        <option value="12" {% if current_month == 12 %}selected{% endif %}>ธันวาคม (12)</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="fw-bold text-corporate-blue">ปี (ค.ศ.):</label>
+                </div>
+                <div class="col-auto">
+                    <!-- แสดงปีปัจจุบันเป็นค่า default -->
+                    <input type="number" name="year" class="form-control border-corporate-secondary shadow-sm" value="{{ current_year }}" style="width: 100px;" required>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary-corporate shadow-sm px-4">
+                        ค้นหาประวัติ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ตารางเงินเดือน -->
     <div class="card card-custom" style="border-top: 4px solid #1A365D;">
         
         <!-- แถบค้นหาด้านบนการ์ด -->
         <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-semibold text-corporate-blue">รายการประจำเดือนปัจจุบัน</h6>
+            <!-- ปรับหัวข้อให้แสดงเดือนและปีที่กำลังดูอยู่ -->
+            <h6 class="mb-0 fw-semibold text-corporate-blue">รายการประจำเดือน {{ current_month }}/{{ current_year }}</h6>
             <div class="input-group input-group-sm" style="width: 250px;">
                 <input type="text" class="form-control" placeholder="ค้นหาชื่อพนักงาน..." style="border-color: #CBD5E0;">
                 <button class="btn btn-outline-corporate" type="button" style="border-color: #CBD5E0;">ค้นหา</button>
@@ -87,8 +127,8 @@
                                             <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2.5a.5.5 0 0 0 .5.5H12v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
                                         </svg>
                                     </div>
-                                    <h5 class="fw-semibold text-corporate-secondary">ไม่มีข้อมูลเงินเดือนในขณะนี้</h5>
-                                    <p class="text-muted small">ระบบจะแสดงผลเมื่อมีการกด "คำนวณเงินเดือนรอบนี้" หรือเพิ่มข้อมูลในฐานข้อมูล</p>
+                                    <h5 class="fw-semibold text-corporate-secondary">ไม่มีข้อมูลเงินเดือนของเดือน {{ current_month }}/{{ current_year }}</h5>
+                                    <p class="text-muted small">ระบบจะไม่แสดงผลหากไม่มีการบันทึกฐานเงินเดือนหรือเวลาทำงานในเดือนที่เลือก</p>
                                 </div>
                             </td>
                         </tr>

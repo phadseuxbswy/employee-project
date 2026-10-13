@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required, 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import get_template
@@ -231,12 +231,18 @@ def update_request_status(request, req_id, status):
 def payroll_view(request):
     employees = Employee.objects.all()
     payrolls = []
+    
+    # 🌟 1. ดึงค่าเดือน/ปี ปัจจุบันเป็นค่าเริ่มต้น
     now = timezone.localtime(timezone.now())
-    current_month = now.month
-    current_year = now.year
+    
+    # 🌟 2. รับค่าเดือนและปีจากการกดค้นหา (ถ้าไม่มีให้ใช้ปัจจุบัน)
+    current_month = int(request.GET.get('month', now.month))
+    current_year = int(request.GET.get('year', now.year))
 
     for emp in employees:
         base = float(emp.salary) if emp.salary else 0.0
+        
+        # 🌟 3. ค้นหา OT เฉพาะเดือนและปีที่เลือก
         ot_records = Attendance.objects.filter(
             employee=emp, 
             date__month=current_month, 
@@ -250,7 +256,7 @@ def payroll_view(request):
         tax = base * 0.03
         net = (base + ot_pay) - sso - tax
 
-        # บันทึก/อัปเดตลงตาราง Payroll Model อัตโนมัติ
+        # บันทึก/อัปเดตลงตาราง Payroll ของเดือน/ปี นั้นๆ
         Payroll.objects.update_or_create(
             employee=emp,
             month=current_month,
@@ -274,7 +280,12 @@ def payroll_view(request):
             'net': net
         })
 
-    return render(request, 'payroll.html', {'payrolls': payrolls})
+    # ส่งตัวแปร current_month และ current_year ไปแสดงที่หน้าเว็บด้วย
+    return render(request, 'payroll.html', {
+        'payrolls': payrolls,
+        'current_month': current_month,
+        'current_year': current_year
+    })
 
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
@@ -321,15 +332,18 @@ def report_view(request):
 
 @login_required
 def ess_dashboard(request):
-    # 🟢 แก้ไขบรรทัดนี้: กรองพนักงานที่สถานะเป็น 'resigned' ออกจาก Dropdown
+    # กรองพนักงานที่สถานะเป็น 'resigned' ออกจาก Dropdown
     employees = Employee.objects.exclude(status='resigned')
     recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:10]
     
     if request.method == 'POST':
         action = request.POST.get('action')
         emp_id = request.POST.get('employee_id')
+        is_ajax = request.POST.get('is_ajax') # 🌟 รับสัญญาณจาก Fetch API
         
         if not emp_id:
+            if is_ajax == 'true':
+                return JsonResponse({'status': 'error', 'message': 'กรุณาเลือกชื่อพนักงานก่อนทำรายการ'})
             messages.error(request, 'กรุณาเลือกชื่อพนักงานก่อนทำรายการ')
             return redirect('ess_dashboard')
             
@@ -348,11 +362,20 @@ def ess_dashboard(request):
             
             if action == 'check_in':
                 att.check_in = now_time
-                messages.success(request, f'บันทึกเวลาเข้างาน {now_time.strftime("%H:%M")} น. สำเร็จ')
+                msg = f'บันทึกเวลาเข้างาน {now_time.strftime("%H:%M")} น. สำเร็จ'
             elif action == 'check_out':
                 att.check_out = now_time
-                messages.success(request, f'บันทึกเวลาออกงาน {now_time.strftime("%H:%M")} น. สำเร็จ')
+                msg = f'บันทึกเวลาออกงาน {now_time.strftime("%H:%M")} น. สำเร็จ'
+            
             att.save()
+            
+            # 🌟 จุดสำคัญ: ถ้าส่งมาจาก AJAX ให้ตอบกลับเป็น JSON
+            if is_ajax == 'true':
+                return JsonResponse({'status': 'success', 'message': msg})
+            
+            # ถ้าเป็นระบบเก่า (ฟอร์มปกติ) ก็ให้โหลดหน้าใหม่
+            messages.success(request, msg)
+            return redirect('ess_dashboard')
             
         elif action == 'submit_request':
             req_type = request.POST.get('request_type')
@@ -368,8 +391,7 @@ def ess_dashboard(request):
                 attachment=attachment
             )
             messages.success(request, 'ส่งคำขอสำเร็จ ระบบส่งเรื่องให้ HR อนุมัติแล้ว')
-            
-        return redirect('ess_dashboard')
+            return redirect('ess_dashboard')
 
     return render(request, 'ess_dashboard.html', {
         'employees': employees, 
