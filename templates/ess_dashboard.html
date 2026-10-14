@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <!-- 🌟 2. ยื่นคำขอ / แนบเอกสาร 🌟 -->
+        <!-- 🌟 2. ยื่นคำขอ / แนบเอกสาร (เอาลิงก์ดาวน์โหลดออกแล้ว) 🌟 -->
         <div class="col-md-6">
             <div class="card card-custom border-0 border-top border-4 border-corporate-secondary h-100">
                 <div class="card-body p-4 bg-light">
@@ -105,15 +105,8 @@
                         <div class="mb-3">
                             <input type="number" name="amount" class="form-control rounded-2 shadow-sm" placeholder="จำนวน" required>
                         </div>
-                        <div class="mb-2">
+                        <div class="mb-4">
                             <input type="file" name="attachment" class="form-control rounded-2 shadow-sm">
-                        </div>
-
-                        <!-- 📄 ลิงก์ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วย -->
-                        <div class="mb-3 text-start">
-                            <a href="#" onclick="alert('ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วยเรียบร้อยแล้ว'); return false;" class="text-decoration-none small fw-semibold" style="color: #2B6CB0;">
-                                <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> 📄 ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วย (สำหรับพิมพ์กรอก)
-                            </a>
                         </div>
 
                         <button type="submit" class="btn btn-primary-corporate w-100 py-2 fw-bold shadow-sm rounded-2 mt-1">
@@ -125,7 +118,8 @@
         </div>
     </div>
 
-    <!-- 🌟 3. ตารางประวัติคำขอ (แสดงให้พนักงานทุกคนมองเห็นสถานะของตัวเองได้ทันที) 🌟 -->
+    <!-- 🌟 3. ตารางประวัติคำขอ (แสดงเฉพาะข้อมูลที่เกี่ยวข้อง หรือเฉพาะ Admin/เจ้าของรายการ) 🌟 -->
+    {% if user.is_staff or user.is_superuser or recent_requests %}
     <div class="card card-custom border-0 border-top border-4 border-corporate-blue mb-5">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอของฉัน (Recent Requests)</h5>
@@ -171,6 +165,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
 </div>
 
