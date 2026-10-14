@@ -334,24 +334,89 @@ def report_view(request):
 
 @login_required
 def ess_dashboard(request):
+    # กรองพนักงานที่สถานะเป็น 'resigned' ออกจาก Dropdown
     employees = Employee.objects.exclude(status='resigned')
     
-    # 🌟 ปรับแก้การดึงข้อมูลประวัติคำขอตรงนี้ 🌟
+    # 🌟 กำหนดค่าเริ่มต้นให้กับ recent_requests ป้องกันค่าว่าง
+    recent_requests = EmployeeRequest.objects.none()
+    
     if request.user.is_staff or request.user.is_superuser:
         # ถ้าเป็น Admin หรือ HR ให้เห็นทั้งหมด
         recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:10]
     else:
-        # พนักงานทั่วไป: ลองค้นหา Employee จากชื่อ หรือ อีเมล หรือบัญชีที่เชื่อมโยง
+        # พนักงานทั่วไป: ค้นหา Employee จากชื่อจริงและนามสกุลที่ตรงกับ User
         emp_profile = Employee.objects.filter(
-            Q(first_name__iexact=request.user.first_name) & Q(last_name__iexact=request.user.last_name)
+            first_name__iexact=request.user.first_name, 
+            last_name__iexact=request.user.last_name
         ).first()
         
         if emp_profile:
             recent_requests = EmployeeRequest.objects.filter(employee=emp_profile).order_by('-created_at')[:10]
         else:
-            # ถ้าชื่อไม่ตรงกัน ให้ดึงคำขอทั้งหมดมาแสดงชั่วคราว หรือดึงตาม User ID (ถ้า Model คุณมีฟิลด์เชื่อม)
-            # หรือถ้าต้องการให้ดึงรายการล่าสุดมาแสดงก่อนเพื่อไม่ให้ตารางว่างเปล่า ให้ใช้บรรทัดนี้:
+            # ถ้าไม่เจอโปรไฟล์พนักงานที่ผูกไว้ ให้ดึงรายการทั้งหมดมาแสดงชั่วคราว (หรือจะเปลี่ยนเป็น .none() ถ้าไม่อยากให้เห็นของคนอื่นเลย)
             recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:5]
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        emp_id = request.POST.get('employee_id')
+        is_ajax = request.POST.get('is_ajax') # 🌟 รับสัญญาณจาก Fetch API
+        
+        if not emp_id:
+            if is_ajax == 'true':
+                return JsonResponse({'status': 'error', 'message': 'กรุณาเลือกชื่อพนักงานก่อนทำรายการ'})
+            messages.error(request, 'กรุณาเลือกชื่อพนักงานก่อนทำรายการ')
+            return redirect('ess_dashboard')
+            
+        emp = get_object_or_404(Employee, id=emp_id)
+        
+        if action in ['check_in', 'check_out']:
+            # แปลงเป็นเวลาท้องถิ่น (Local Time)
+            now_local = timezone.localtime(timezone.now())
+            today = now_local.date()
+            now_time = now_local.time()
+            
+            # ดึงหรือสร้างแถวข้อมูลของวันนี้แบบปลอดภัย
+            att = Attendance.objects.filter(employee=emp, date=today).first()
+            if not att:
+                att = Attendance.objects.create(employee=emp, date=today)
+            
+            if action == 'check_in':
+                att.check_in = now_time
+                msg = f'บันทึกเวลาเข้างาน {now_time.strftime("%H:%M")} น. สำเร็จ'
+            elif action == 'check_out':
+                att.check_out = now_time
+                msg = f'บันทึกเวลาออกงาน {now_time.strftime("%H:%M")} น. สำเร็จ'
+            
+            att.save()
+            
+            # 🌟 จุดสำคัญ: ถ้าส่งมาจาก AJAX ให้ตอบกลับเป็น JSON
+            if is_ajax == 'true':
+                return JsonResponse({'status': 'success', 'message': msg})
+            
+            messages.success(request, msg)
+            return redirect('ess_dashboard')
+            
+        elif action == 'submit_request':
+            req_type = request.POST.get('request_type')
+            title = request.POST.get('title')
+            amount = request.POST.get('amount') or 0
+            attachment = request.FILES.get('attachment')
+            
+            EmployeeRequest.objects.create(
+                employee=emp,
+                request_type=req_type,
+                title=title,
+                amount=amount,
+                attachment=attachment
+            )
+            messages.success(request, 'ส่งคำขอสำเร็จ ระบบส่งเรื่องให้ HR อนุมัติแล้ว')
+            return redirect('ess_dashboard')
+
+    # 🌟 บรรทัดนี้สำคัญมาก: ต้องมีคำสั่ง return คืนค่าเรนเดอร์หน้าเว็บทุกครั้ง ห้ามหลุดเด็ดขาด
+    return render(request, 'ess_dashboard.html', {
+        'employees': employees, 
+        'recent_requests': recent_requests
+    })
     
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
