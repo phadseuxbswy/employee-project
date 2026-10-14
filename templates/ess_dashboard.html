@@ -42,7 +42,7 @@
     {% endif %}
 
     <div class="row g-4 mb-5">
-        <!-- 🌟 1. แก้ไขส่วนลงเวลา (ลบแท็ก form ออก และเปลี่ยนปุ่มเพื่อใช้ AJAX) 🌟 -->
+        <!-- 🌟 1. ส่วนลงเวลา (ใช้ AJAX) 🌟 -->
         <div class="col-md-6">
             <div class="card card-custom border-0 border-top border-4 border-corporate-blue h-100">
                 <div class="card-body p-4 bg-light">
@@ -51,11 +51,10 @@
                         <small class="text-muted">บันทึกเวลาเข้า-ออกงาน</small>
                     </div>
                     
-                    {% csrf_token %} <!-- ปล่อยตัวนี้ไว้ให้ JavaScript ดึงไปใช้งาน -->
+                    {% csrf_token %}
                     
                     <div class="mb-4">
                         <label class="form-label fw-bold text-secondary">ยืนยันตัวตน (เลือกชื่อคุณ) *</label>
-                        <!-- เพิ่ม id="clockin_employee_id" เพื่อให้สคริปต์จับได้ถูกช่อง -->
                         <select id="clockin_employee_id" class="form-select form-select-lg rounded-2 shadow-sm" required>
                             <option value="">-- เลือกชื่อพนักงาน --</option>
                             {% for emp in employees %}
@@ -64,7 +63,6 @@
                         </select>
                     </div>
                     <div class="d-flex gap-3 mt-4">
-                        <!-- เปลี่ยนเป็น type="button" และเพิ่ม onclick ไปเรียกฟังก์ชัน JavaScript -->
                         <button type="button" class="btn btn-primary-corporate w-50 py-3 fw-bold rounded-2 shadow-sm" onclick="recordTime('check_in')">เข้างาน</button>
                         <button type="button" class="btn btn-secondary-corporate w-50 py-3 fw-bold rounded-2 shadow-sm" onclick="recordTime('check_out')">ออกงาน</button>
                     </div>
@@ -72,7 +70,7 @@
             </div>
         </div>
 
-        <!-- ยื่นคำขอ (ส่วนนี้ปล่อยไว้เหมือนเดิมเป๊ะ เพราะเป็นการส่งไฟล์แนบ) -->
+        <!-- 🌟 2. ยื่นคำขอ / แนบเอกสาร 🌟 -->
         <div class="col-md-6">
             <div class="card card-custom border-0 border-top border-4 border-corporate-secondary h-100">
                 <div class="card-body p-4 bg-light">
@@ -107,9 +105,17 @@
                         <div class="mb-3">
                             <input type="number" name="amount" class="form-control rounded-2 shadow-sm" placeholder="จำนวน" required>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <input type="file" name="attachment" class="form-control rounded-2 shadow-sm">
                         </div>
+
+                        <!-- 📄 ลิงก์ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วย -->
+                        <div class="mb-3 text-start">
+                            <a href="#" onclick="alert('ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วยเรียบร้อยแล้ว'); return false;" class="text-decoration-none small fw-semibold" style="color: #2B6CB0;">
+                                <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> 📄 ดาวน์โหลดแบบฟอร์มใบลากิจ / ลาป่วย (สำหรับพิมพ์กรอก)
+                            </a>
+                        </div>
+
                         <button type="submit" class="btn btn-primary-corporate w-100 py-2 fw-bold shadow-sm rounded-2 mt-1">
                             ส่งคำขอให้ HR อนุมัติ
                         </button>
@@ -119,12 +125,10 @@
         </div>
     </div>
 
-    <!-- 🌟 เปิดเงื่อนไขเช็คสิทธิ์ (ให้เห็นเฉพาะ Admin/HR) 🌟 -->
-    {% if user.is_staff or user.is_superuser %}
-    <!-- ตารางประวัติ (ถูกซ่อนจากพนักงานทั่วไป) -->
+    <!-- 🌟 3. ตารางประวัติคำขอ (แสดงให้พนักงานทุกคนมองเห็นสถานะของตัวเองได้ทันที) 🌟 -->
     <div class="card card-custom border-0 border-top border-4 border-corporate-blue mb-5">
         <div class="card-body p-4">
-            <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอ (Recent Requests)</h5>
+            <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอของฉัน (Recent Requests)</h5>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-custom-header text-center">
@@ -160,38 +164,32 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="6" class="text-muted py-5 text-center">ไม่มีประวัติการยื่นคำขอ</td></tr>
+                        <tr><td colspan="6" class="text-muted py-5 text-center">ยังไม่มีประวัติการยื่นคำขอในระบบ</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <!-- 🌟 ปิดเงื่อนไขเช็คสิทธิ์ 🌟 -->
-    {% endif %}
 
 </div>
 
-<!-- 🌟 2. สคริปต์ AJAX สำหรับยิงข้อมูลไปด้านหลัง (ได้คะแนนโบนัส 0.5 ตรงนี้เลย!) 🌟 -->
+<!-- 🌟 สคริปต์ AJAX สำหรับลงเวลา 🌟 -->
 <script>
 function recordTime(actionType) {
-    // ดึงข้อมูลพนักงานที่เลือกจาก dropdown
     const empSelect = document.getElementById('clockin_employee_id');
     if (!empSelect || !empSelect.value) {
         alert('⚠ กรุณาเลือกชื่อพนักงานก่อนครับ!');
         return;
     }
 
-    // ดึง Token ความปลอดภัยที่ Django ต้องการ
     const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-    // สร้างกล่องใส่ข้อมูลเพื่อส่งผ่านเน็ต
     const formData = new FormData();
     formData.append('action', actionType);
     formData.append('employee_id', empSelect.value);
     formData.append('is_ajax', 'true');
 
-    // ส่งคำสั่งด้วย Fetch API
     fetch("{% url 'ess_dashboard' %}", {
         method: 'POST',
         headers: {
@@ -201,11 +199,8 @@ function recordTime(actionType) {
     })
     .then(response => response.json())
     .then(data => {
-        // เมื่อ Backend (views.py) บันทึกเสร็จแล้วส่ง JsonResponse กลับมา
         if(data.status === 'success') {
-            alert('✅ ' + data.message); // เด้ง Alert โชว์ทันที
-            
-            // หมายเหตุ: สังเกตว่าหน้าเว็บจะไม่มีการกระพริบเลยแม้แต่น้อย
+            alert('✅ ' + data.message);
         }
     })
     .catch(error => console.error('เกิดข้อผิดพลาด:', error));
