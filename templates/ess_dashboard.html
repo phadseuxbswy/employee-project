@@ -119,7 +119,9 @@
         </div>
     </div>
 
-    <!-- ตารางประวัติ (ปล่อยไว้เหมือนเดิม) -->
+    <!-- 🌟 เปิดเงื่อนไขเช็คสิทธิ์ (ให้เห็นเฉพาะ Admin/HR) 🌟 -->
+    {% if user.is_staff or user.is_superuser %}
+    <!-- ตารางประวัติ (ถูกซ่อนจากพนักงานทั่วไป) -->
     <div class="card card-custom border-0 border-top border-4 border-corporate-blue mb-5">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอ (Recent Requests)</h5>
@@ -165,6 +167,9 @@
             </div>
         </div>
     </div>
+    <!-- 🌟 ปิดเงื่อนไขเช็คสิทธิ์ 🌟 -->
+    {% endif %}
+
 </div>
 
 <!-- 🌟 2. สคริปต์ AJAX สำหรับยิงข้อมูลไปด้านหลัง (ได้คะแนนโบนัส 0.5 ตรงนี้เลย!) 🌟 -->
@@ -173,7 +178,7 @@ function recordTime(actionType) {
     // ดึงข้อมูลพนักงานที่เลือกจาก dropdown
     const empSelect = document.getElementById('clockin_employee_id');
     if (!empSelect || !empSelect.value) {
-        alert('⚠️️ กรุณาเลือกชื่อพนักงานก่อนครับ!');
+        alert('⚠ กรุณาเลือกชื่อพนักงานก่อนครับ!');
         return;
     }
 

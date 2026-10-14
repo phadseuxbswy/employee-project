@@ -16,6 +16,8 @@ from .serializers import EmployeeSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, filters
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from datetime import datetime , date
+import datetime
 
 # นำเข้า Models และ Forms
 from .models import Employee, Attendance, EmployeeRequest, Payroll
@@ -513,16 +515,16 @@ def manager_dashboard(request):
             return redirect('ess_dashboard')
 
         # 2. ดึงรายชื่อพนักงานที่อยู่ "แผนกเดียวกับหัวหน้า"
-        department_name = managed_dept.name
-        team_members = Employee.objects.filter(department=department_name).exclude(status='resigned')
+        department_name = managed_dept.name.strip() 
+        team_members = Employee.objects.filter(department__icontains=department_name)
     
     # 3. สร้างตัวแปร team_data เพื่อจับคู่พนักงานกับการลงเวลาของวันนี้
-    today = date.today()
+    today = datetime.datetime.now().date()
     team_data = []
     present_count = 0
-    
+
     for emp in team_members:
-        # หาเวลาลงงานของพนักงานคนนี้ในตาราง Attendance เฉพาะ "วันนี้"
+
         attendance = Attendance.objects.filter(employee=emp, date=today).first()
         
         # ถาวันนี้มีบันทึกเวลา ให้บวกจำนวนคนมาทำงานเพิ่ม 1
@@ -539,7 +541,7 @@ def manager_dashboard(request):
     
     context = {
         'department_name': department_name,
-        'team_data': team_data, # เปลี่ยนมาส่งตัวแปร team_data แทน
+        'team_data': team_data, 
         'stats': {
             'total': total_staff,
             'present': present_count, # ใช้จำนวนคนที่นับได้จริง
