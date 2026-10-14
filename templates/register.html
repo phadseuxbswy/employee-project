@@ -12,7 +12,7 @@
     /* ปรับขอบการ์ดให้เรียบหรูทางการ */
     .card-custom { 
         border-radius: 0.5rem; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
         border: 1px solid #E2E8F0; 
         background-color: #fff; 
         overflow: hidden; 
@@ -31,16 +31,38 @@
         color: #fff; 
     }
     
-    /* ปรับแต่งช่องกรอกข้อมูลในฟอร์มให้ดูมาตรฐานองค์กร */
-    .form-control {
-        border-radius: 4px;
+    /* 🌟 บังคับให้ช่อง Input ที่ Django สร้างขึ้น กว้าง 100% และสวยงามเหมือน .form-control */
+    .register-form-group label {
+        display: block;
+        font-weight: 600;
+        color: #1A365D;
+        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+    }
+    .register-form-group input[type="text"],
+    .register-form-group input[type="password"],
+    .register-form-group input[type="email"] {
+        width: 100%;
+        border-radius: 6px;
         padding: 0.6rem 0.85rem;
         border: 1px solid #CBD5E0;
         font-size: 0.95rem;
+        background-color: #F8FAFC;
+        transition: all 0.2s ease;
     }
-    .form-control:focus {
+    .register-form-group input:focus {
+        outline: none;
+        background-color: #ffffff;
         border-color: #2B6CB0;
-        box-shadow: 0 0 0 0.2rem rgba(43, 108, 176, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(43, 108, 176, 0.2);
+    }
+
+    /* ข้อความคำแนะนำใต้ช่องกรอก */
+    .form-help-text {
+        font-size: 0.8rem;
+        color: #718096;
+        margin-top: 0.35rem;
+        line-height: 1.4;
     }
 
     /* ลิงก์ไปหน้าเข้าสู่ระบบ */
@@ -59,8 +81,11 @@
     ul.errorlist {
         color: #C53030;
         font-size: 0.85rem;
-        padding-left: 1.2rem;
-        margin-bottom: 0.5rem;
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0.35rem;
+        margin-bottom: 0;
+        font-weight: 500;
     }
 </style>
 
@@ -74,16 +99,49 @@
                 </div>
                 
                 <div class="card-body p-4 p-md-5">
-                    <form method="POST">
+                    <form method="POST" novalidate>
                         {% csrf_token %}
                         
-                        <!-- เรนเดอร์ฟอร์ม -->
-                        <div class="mb-3">
-                            {{ form.as_p }}
+                        <!-- แสดง Error รวมของฟอร์ม (ถ้ามี) -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger py-2 small mb-3">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- 1. ช่องกรอกชื่อผู้ใช้ -->
+                        <div class="mb-3 register-form-group">
+                            <label for="{{ form.username.id_for_label }}">ชื่อผู้ใช้ (Username)</label>
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                            <div class="form-help-text">
+                                ความยาวไม่เกิน 150 ตัวอักษร (ใช้ตัวอักษร, ตัวเลข และ @/./+/-/_ ได้)
+                            </div>
+                        </div>
+
+                        <!-- 2. ช่องกรอกรหัสผ่าน -->
+                        <div class="mb-3 register-form-group">
+                            <label for="{{ form.password1.id_for_label }}">รหัสผ่าน (Password)</label>
+                            {{ form.password1 }}
+                            {{ form.password1.errors }}
+                            <div class="form-help-text">
+                                • ความยาวอย่างน้อย 8 ตัวอักษร<br>
+                                • ไม่ควรใช้รหัสผ่านที่คาดเดาง่าย หรือเป็นตัวเลขล้วนทั้งหมด
+                            </div>
+                        </div>
+
+                        <!-- 3. ช่องยืนยันรหัสผ่าน -->
+                        <div class="mb-4 register-form-group">
+                            <label for="{{ form.password2.id_for_label }}">ยืนยันรหัสผ่าน (Confirm Password)</label>
+                            {{ form.password2 }}
+                            {{ form.password2.errors }}
+                            <div class="form-help-text">
+                                กรอกรหัสผ่านเดิมอีกครั้งเพื่อยืนยันความถูกต้อง
+                            </div>
                         </div>
 
                         <!-- ปุ่มยืนยันการสมัครสีน้ำเงิน -->
-                        <button type="submit" class="btn btn-primary-corporate w-100 py-2 rounded-2 mt-3 shadow-sm">
+                        <button type="submit" class="btn btn-primary-corporate w-100 py-2 rounded-2 mt-2 shadow-sm">
                             ยืนยันการสมัคร
                         </button>
                     </form>
