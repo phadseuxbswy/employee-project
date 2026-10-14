@@ -75,23 +75,24 @@
                         </tr>
                     </thead>
                     <tbody class="text-center">
-                        {% for emp in team_members %}
+                        {% for item in team_data %}
                         <tr>
                             <td class="text-start ps-4 fw-semibold text-corporate-blue">
-                                {{ emp.first_name }} {{ emp.last_name }}
+                                {{ item.employee.first_name }} {{ item.employee.last_name }}
                             </td>
-                            <!-- 🟢 ดึงชื่อแผนกจากฐานข้อมูลมาแสดง -->
-                            <td class="text-secondary">{{ emp.get_department_display }}</td>
-                            <!-- 🟢 แก้ไขตรงนี้เป็น phone_number ตามใน models.py -->
-                            <td class="text-secondary">{{ emp.phone_number|default:"-" }}</td>
-                            <td>
-                                <!-- จำลองสถานะ -->
-                                {% if forloop.counter == 1 %}
-                                    <span class="badge bg-warning text-dark rounded-2 status-badge">ลาป่วย</span>
-                                {% elif forloop.counter == 2 %}
-                                    <span class="badge bg-danger rounded-2 status-badge">ยังไม่เข้างาน</span>
+                            <td class="text-secondary">{{ item.employee.department }}</td>
+                            <td class="text-secondary">
+                                {% if item.employee.phone_number %}
+                                    {{ item.employee.phone_number }}
                                 {% else %}
-                                    <span class="badge bg-success rounded-2 status-badge">เข้างานแล้ว</span>
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.attendance %}
+                                    <span class="badge bg-success rounded-2 status-badge">เข้างานแล้ว ({{ item.attendance.time_in|time:"H:i" }})</span>
+                                {% else %}
+                                    <span class="badge bg-danger rounded-2 status-badge">ยังไม่เข้างาน</span>
                                 {% endif %}
                             </td>
                         </tr>

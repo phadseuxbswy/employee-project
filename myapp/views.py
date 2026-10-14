@@ -499,35 +499,29 @@ def resigned_list(request):
 
 @login_required
 def manager_dashboard(request):
-    # 1. เช็คว่าเป็นแอดมิน (Superuser) หรือไม่
     if request.user.is_superuser:
         department_name = "ทุกแผนก (มุมมองผู้ดูแลระบบ)"
-        # แอดมินจะเห็นพนักงานทั้งหมดที่ยังไม่ลาออก
         team_members = Employee.objects.exclude(status='resigned')
-        
     else:
         # 1. เช็คว่าคนที่ล็อกอินเข้ามา เป็นหัวหน้าของแผนกไหน
         managed_dept = Department.objects.filter(manager=request.user).first()
         
-        # ถ้าไม่ใช่หัวหน้าแผนก และไม่ใช่แอดมิน ให้เด้งกลับไปหน้า ESS พร้อมแจ้งเตือน
         if not managed_dept:
             messages.error(request, 'คุณไม่มีสิทธิ์เข้าถึงหน้าจัดการทีม')
             return redirect('ess_dashboard')
 
-        # 2. ดึงรายชื่อพนักงานที่อยู่ "แผนกเดียวกับหัวหน้า"
-        department_name = managed_dept.name.strip() 
-        team_members = Employee.objects.filter(department__icontains=department_name)
+        department_name = managed_dept.name
+        
+        # 🌟 2. ดึงเฉพาะลูกทีมที่อยู่ "แผนกเดียวกับหัวหน้า"
+        team_members = Employee.objects.filter(department=department_name).exclude(status='resigned')
     
-    # 3. สร้างตัวแปร team_data เพื่อจับคู่พนักงานกับการลงเวลาของวันนี้
+    # 3. จับคู่พนักงานกับการลงเวลาของวันนี้
     today = datetime.datetime.now().date()
     team_data = []
     present_count = 0
-
+    
     for emp in team_members:
-
         attendance = Attendance.objects.filter(employee=emp, date=today).first()
-        
-        # ถาวันนี้มีบันทึกเวลา ให้บวกจำนวนคนมาทำงานเพิ่ม 1
         if attendance:
             present_count += 1
             
@@ -536,7 +530,7 @@ def manager_dashboard(request):
             'attendance': attendance
         })
 
-    # 4. คำนวณสถิติของทีม
+    # 4. คำนวณสถิติ
     total_staff = team_members.count()
     
     context = {
@@ -544,8 +538,8 @@ def manager_dashboard(request):
         'team_data': team_data, 
         'stats': {
             'total': total_staff,
-            'present': present_count, # ใช้จำนวนคนที่นับได้จริง
-            'leave': 0, # ค้างไว้ก่อน (ถ้าทำระบบลาแล้วค่อยมาเชื่อม)
+            'present': present_count,
+            'leave': 0, 
             'absent': total_staff - present_count
         }
     }
