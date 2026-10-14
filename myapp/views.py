@@ -497,7 +497,7 @@ def resigned_list(request):
 
 @login_required
 def manager_dashboard(request):
-    # เช็คว่าเป็นแอดมิน (Superuser) หรือไม่
+    # 1. เช็คว่าเป็นแอดมิน (Superuser) หรือไม่
     if request.user.is_superuser:
         department_name = "ทุกแผนก (มุมมองผู้ดูแลระบบ)"
         # แอดมินจะเห็นพนักงานทั้งหมดที่ยังไม่ลาออก
@@ -516,20 +516,35 @@ def manager_dashboard(request):
         department_name = managed_dept.name
         team_members = Employee.objects.filter(department=department_name).exclude(status='resigned')
     
-    # 3. คำนวณสถิติของทีม
-    total_staff = team_members.count()
+    # 3. สร้างตัวแปร team_data เพื่อจับคู่พนักงานกับการลงเวลาของวันนี้
+    today = date.today()
+    team_data = []
+    present_count = 0
     
-    # (จำลอง) ดึงคนที่ลงเวลาวันนี้จริงๆ
-    present_staff = total_staff # ใส่เป็นค่าจำลองไปก่อน
+    for emp in team_members:
+        # หาเวลาลงงานของพนักงานคนนี้ในตาราง Attendance เฉพาะ "วันนี้"
+        attendance = Attendance.objects.filter(employee=emp, date=today).first()
+        
+        # ถาวันนี้มีบันทึกเวลา ให้บวกจำนวนคนมาทำงานเพิ่ม 1
+        if attendance:
+            present_count += 1
+            
+        team_data.append({
+            'employee': emp,
+            'attendance': attendance
+        })
+
+    # 4. คำนวณสถิติของทีม
+    total_staff = team_members.count()
     
     context = {
         'department_name': department_name,
-        'team_members': team_members,
+        'team_data': team_data, # เปลี่ยนมาส่งตัวแปร team_data แทน
         'stats': {
             'total': total_staff,
-            'present': present_staff,
-            'leave': 0,
-            'absent': total_staff - present_staff
+            'present': present_count, # ใช้จำนวนคนที่นับได้จริง
+            'leave': 0, # ค้างไว้ก่อน (ถ้าทำระบบลาแล้วค่อยมาเชื่อม)
+            'absent': total_staff - present_count
         }
     }
     return render(request, 'manager_dashboard.html', context)
