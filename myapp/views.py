@@ -336,7 +336,21 @@ def report_view(request):
 def ess_dashboard(request):
     # กรองพนักงานที่สถานะเป็น 'resigned' ออกจาก Dropdown
     employees = Employee.objects.exclude(status='resigned')
-    recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:10]
+    
+    # 🌟 ปรับแก้ตรงนี้: ให้ Admin/HR เห็นทั้งหมด แต่พนักงานทั่วไปเห็นเฉพาะของตัวเอง 🌟
+    if request.user.is_staff or request.user.is_superuser:
+        recent_requests = EmployeeRequest.objects.all().order_by('-created_at')[:10]
+    else:
+        # ค้นหาพนักงานที่ตรงกับ User ที่กำลังล็อกอิน (จับคู่ด้วยชื่อจริงและนามสกุล)
+        emp_profile = Employee.objects.filter(
+            first_name=request.user.first_name, 
+            last_name=request.user.last_name
+        ).first()
+        
+        if emp_profile:
+            recent_requests = EmployeeRequest.objects.filter(employee=emp_profile).order_by('-created_at')[:10]
+        else:
+            recent_requests = EmployeeRequest.objects.none()
     
     if request.method == 'POST':
         action = request.POST.get('action')
