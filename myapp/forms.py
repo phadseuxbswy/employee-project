@@ -9,7 +9,7 @@ class EmployeeForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['employee_id']
         widgets = {
-            # 🔴 หมายเหตุ: ถ้าใน models.py คุณแพทตั้งชื่อฟิลด์วันเกิดว่า "dob" ให้แก้คำว่า 'birth_date' เป็น 'dob' ด้วยนะครับ
+
             'birth_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),

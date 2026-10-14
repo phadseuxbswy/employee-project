@@ -56,7 +56,7 @@ class Employee(models.Model):
     hire_date = models.DateField(null=True, blank=True, verbose_name="วันที่เริ่มทำงาน")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name="สถานะพนักงาน")
     phone_number = models.CharField(max_length=15, null=True, blank=True, verbose_name="เบอร์โทรศัพท์")
-    email = models.EmailField(blank=True, null=True, verbose_name="อีเมล") # เพิ่มฟิลด์อีเมลรองรับไว้แล้ว
+    email = models.EmailField(blank=True, null=True, verbose_name="อีเมล")
     address = models.TextField(blank=True, null=True, verbose_name="ที่อยู่")
     bank_name = models.CharField(max_length=50, choices=BANK_CHOICES, null=True, blank=True, verbose_name="ชื่อธนาคาร")
     bank_account = models.CharField(max_length=50, null=True, blank=True, verbose_name="เลขบัญชีธนาคาร")

@@ -7,7 +7,7 @@
     <!-- โหลด Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- 🟢 เพิ่มฟอนต์ TH Sarabun จาก Google Fonts ไว้ตรงนี้ -->
+    <!-- เพิ่มฟอนต์ TH Sarabun จาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
         /* 💼 โทนทางการ: พื้นหลังสีเทาอ่อน */
         body {
             background-color: #F4F6F9; 
-            /* 🟢 เรียกใช้ฟอนต์ Sarabun และปรับขนาดฟอนต์เริ่มต้น */
             font-family: 'Sarabun', sans-serif;
             font-size: 16px;
         }
@@ -27,18 +26,19 @@
         .sidebar {
             width: 300px;
             height: 100vh;
-            background-color: #FFFFFF; /* เมนูสีขาว */
-            position: fixed; /* ยึดติดขอบซ้าย */
+            background-color: #FFFFFF;
+            position: fixed;
             top: 0;
-            left: 0;
+            left: 0; /* ค่าเริ่มต้นให้แสดงปกติในหน้าจอใหญ่ */
             padding-top: 15px;
             overflow-y: auto;
-            border-right: 1px solid #DEE2E6; /* เส้นขอบบางๆ แบ่งสัดส่วนชัดเจน */
+            border-right: 1px solid #DEE2E6;
+            z-index: 1040; /* ให้อยู่เหนือเนื้อหาหลัก */
+            transition: all 0.3s ease-in-out; /* เพิ่มความสมูทตอนเปิด-ปิด */
         }
 
-        /* ชื่อระบบด้านบน */
         .sidebar-brand {
-            color: #1A365D !important; /* สีกรมท่า */
+            color: #1A365D !important;
             font-weight: 800;
             font-size: 1.3rem;
             text-decoration: none;
@@ -48,7 +48,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* โปรไฟล์ผู้ใช้ */
         .user-profile {
             padding: 10px 15px;
             margin: 0 20px 20px 20px;
@@ -81,7 +80,6 @@
             font-size: 0.9rem;
         }
 
-        /* เมนูต่างๆ */
         .sidebar .nav-link {
             color: #4A5568 !important;
             font-weight: 500;
@@ -93,14 +91,12 @@
             border-left: 4px solid transparent;
         }
 
-        /* เอฟเฟกต์ตอนชี้เมนู (เพิ่มแถบสีน้ำเงินด้านซ้าย) */
         .sidebar .nav-link:hover {
             background-color: #F0F4F8 !important;
             color: #2B6CB0 !important;
             border-left: 4px solid #2B6CB0;
         }
         
-        /* ปุ่มออกจากระบบ */
         .btn-logout {
             background-color: transparent; 
             color: #C53030;
@@ -120,25 +116,64 @@
         }
 
         /* -------------------------------------
-            🔴 พื้นที่เนื้อหาหลัก (ดันหลบ Sidebar)
+            🔴 พื้นที่เนื้อหาหลัก
         -------------------------------------- */
         .main-content {
-            margin-left: 300px; /* ดันเนื้อหาไปทางขวาให้พ้นระยะ Sidebar */
+            margin-left: 300px;
             padding: 2.5rem;
             min-height: 100vh;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* -------------------------------------
+            🔴 ปรับการแสดงผลสำหรับมือถือ (Responsive)
+        -------------------------------------- */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -300px; /* ซ่อน Sidebar ไปทางซ้าย */
+            }
+            .sidebar.active {
+                left: 0; /* เลื่อน Sidebar ออกมาเมื่อกดปุ่ม */
+            }
+            .main-content {
+                margin-left: 0; /* เมื่อซ่อน Sidebar ให้เนื้อหาหลักขยายเต็มจอ */
+                padding: 1rem; /* ลด padding บนมือถือ */
+                padding-top: 60px; /* เพิ่มพื้นที่ด้านบนหลบปุ่ม 3 ขีด */
+            }
+        }
+        
+        /* ตกแต่งปุ่ม 3 ขีด Hamburger Menu */
+        #sidebarToggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1050; /* ให้อยู่บนสุดเสมอ */
+            background-color: #1A365D;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
+    <!-- ปุ่ม 3 ขีด จะแสดงเฉพาะบนหน้าจอขนาดเล็กกว่า 768px (d-md-none ของ Bootstrap) -->
+    <button id="sidebarToggle" class="d-md-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+        </svg>
+    </button>
+
+    <!-- กำหนด id="sidebar" ให้กับ nav เพื่อเรียกใช้ใน JavaScript -->
+    <nav id="sidebar" class="sidebar">
 
         <a href="{% url 'index' %}" class="sidebar-brand">
             HR MANAGEMENT
         </a>
 
-        <!-- 🟢 แก้ไขโปรไฟล์ผู้ใช้ตรงนี้ -->
         <a href="{% url 'profile' %}" class="user-profile" style="display: flex; align-items: center; overflow: hidden;">
             {% if current_emp and current_emp.photo %}
                 <img src="{{ current_emp.photo.url }}" class="user-avatar" style="object-fit: cover; padding: 0; flex-shrink: 0;">
@@ -151,7 +186,6 @@
                 {{ user.username }}
             </span>
             
-            <!-- 🟢 ป้ายสถานะถูกดันไปทางขวาสุดด้วย ms-auto -->
             <div class="ms-auto" style="padding-left: 5px;">
                 {% if user.is_superuser %}
                     <span class="badge bg-danger" style="font-size: 0.7rem; font-weight: 500;">แอดมิน</span>
@@ -236,11 +270,39 @@
         </form>
     </nav>
 
-    <main class="main-content">
+    <!-- กำหนด id="main-content" เผื่อต้องขยับตามเวลาเปิด Sidebar -->
+    <main id="main-content" class="main-content">
         {% block content %}
         {% endblock %}
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script สำหรับควบคุมการเปิด-ปิด Sidebar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault(); // ป้องกันพฤติกรรมพื้นฐานของปุ่ม
+                    sidebar.classList.toggle('active');
+                });
+                
+                // เสริม: กดพื้นที่ว่างๆ บนมือถือ ให้ Sidebar พับเก็บเองอัตโนมัติ
+                document.addEventListener('click', function(event) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnToggle = sidebarToggle.contains(event.target);
+                    
+                    if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 768) {
+                        if (sidebar.classList.contains('active')) {
+                            sidebar.classList.remove('active');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
