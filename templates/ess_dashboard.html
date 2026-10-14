@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <!-- 🌟 2. ยื่นคำขอ / แนบเอกสาร (เอาลิงก์ดาวน์โหลดออกแล้ว) 🌟 -->
+        <!-- 🌟 2. ยื่นคำขอ / แนบเอกสาร 🌟 -->
         <div class="col-md-6">
             <div class="card card-custom border-0 border-top border-4 border-corporate-secondary h-100">
                 <div class="card-body p-4 bg-light">
@@ -118,8 +118,7 @@
         </div>
     </div>
 
-    <!-- 🌟 3. ตารางประวัติคำขอ (แสดงเฉพาะข้อมูลที่เกี่ยวข้อง หรือเฉพาะ Admin/เจ้าของรายการ) 🌟 -->
-    {% if user.is_staff or user.is_superuser or recent_requests %}
+    <!-- 🌟 3. ตารางประวัติคำขอของฉัน (แสดงผลให้เห็นทันที โดยดึงข้อมูลที่กรองจาก views.py มาแสดง) 🌟 -->
     <div class="card card-custom border-0 border-top border-4 border-corporate-blue mb-5">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 text-corporate-blue">ประวัติคำขอของฉัน (Recent Requests)</h5>
@@ -165,7 +164,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
 
 </div>
 
