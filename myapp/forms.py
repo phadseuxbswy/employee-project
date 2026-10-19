@@ -26,6 +26,13 @@ class EmployeeForm(forms.ModelForm):
             'bank_account': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น 111-111-1111'}),
             
             'hire_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
+            
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'maxlength': '10',
+                'placeholder': 'กรอกเฉพาะตัวเลข 10 หลัก',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '');"
+                }),
         }
 
     def clean_salary(self):

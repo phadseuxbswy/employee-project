@@ -1,7 +1,13 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 
+numeric_only_validator = RegexValidator(
+    regex=r'^[0-9]+$',
+    message='กรุณากรอกเฉพาะตัวเลข 0-9 เท่านั้น (ห้ามใส่ตัวอักษรหรือขีด)'
+)
+    
 TITLE_CHOICES = [
     ('นาย', 'นาย'),
     ('นาง', 'นาง'),
@@ -62,6 +68,14 @@ class Employee(models.Model):
     bank_account = models.CharField(max_length=50, null=True, blank=True, verbose_name="เลขบัญชีธนาคาร")
     
     photo = models.ImageField(upload_to='employee_photos/', null=True, blank=True, verbose_name="รูปภาพประจำตัว")
+    
+    phone_number = models.CharField(
+        max_length=10, 
+        null=True, 
+        blank=True, 
+        validators=[numeric_only_validator],
+        verbose_name="เบอร์โทรศัพท์"
+    )
 
     # 🟢 ฟังก์ชันสร้างรหัสพนักงานอัตโนมัติ (เช่น EMP001)
     def save(self, *args, **kwargs):
